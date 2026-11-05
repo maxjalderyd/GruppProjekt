@@ -1,0 +1,6 @@
+UPDATE Movie
+SET PricePerDay = CASE
+                      WHEN ReleaseDate >= '2000-01-01' THEN 49
+                      ELSE 29
+    END;
+
