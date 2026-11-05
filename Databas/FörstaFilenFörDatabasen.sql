@@ -1,0 +1,1 @@
+CREATE TABLE Movies (Id Int auto_increment primary key ,Name varchar(64) not null);
