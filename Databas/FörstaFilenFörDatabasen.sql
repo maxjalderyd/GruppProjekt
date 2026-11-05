@@ -47,3 +47,7 @@ PricePerDay        INT NOT NULL,
 FOREIGN KEY (OrderId) REFERENCES Rental(Id),
 FOREIGN KEY (MovieCopyId) REFERENCES MovieCopy(Id)
 );
+
+CREATE TABLE LOL (
+    Name INT
+);
