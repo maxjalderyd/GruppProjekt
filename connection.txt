@@ -1,0 +1,14 @@
+using MySqlConnector;
+    private readonly MySqlConnection _connection;
+
+        string connectionString =
+            """
+            Server=comet-direct.usbx.me;
+            Port=17815;
+            Database=yh_max_exempeldatabas;
+            User=yh_max;
+            Password=C7AKQfWB#sha7n;
+            """;
+
+        _connection = new MySqlConnection(connectionString);
+        _connection.Open();
