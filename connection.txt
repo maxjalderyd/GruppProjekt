@@ -1,14 +1,16 @@
-using MySqlConnector;
+using System.Data;
+using MySql.Data.MySqlClient;
+using Dapper;
+
     private readonly MySqlConnection _connection;
 
         string connectionString =
             """
             Server=comet-direct.usbx.me;
             Port=17815;
-            Database=yh_max_exempeldatabas;
+            Database=yh_max_Videoteket;
             User=yh_max;
             Password=C7AKQfWB#sha7n;
             """;
 
-        _connection = new MySqlConnection(connectionString);
-        _connection.Open();
+    using IDbConnection connection = new MySqlConnection(connectionString);
