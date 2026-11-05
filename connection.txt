@@ -13,5 +13,4 @@ using Dapper;
             Password=C7AKQfWB#sha7n;
             """;
 
-        _connection = new MySqlConnection(connectionString);
-        _connection.Open();
+    using IDbConnection connection = new MySqlConnection(connectionString);
