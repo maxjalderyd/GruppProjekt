@@ -21,22 +21,19 @@ public class UserInterface
             Console.WriteLine("2. Visa alla filmer");
             Console.WriteLine("3. Lägg in ny film"); // peter
             Console.WriteLine("4. Lämna tillbaka film");
-            Console.WriteLine("5. Lägg till ny kund");
+            Console.WriteLine("5. Lägg till ny kund"); //vanja
             Console.WriteLine("6. Ta bort film ur katalog");
             Console.WriteLine("7. Skicka faktura");
-            Console.WriteLine("8. Visa försenade lån");
+            Console.WriteLine("8. Visa försenade lån"); //max
             Console.WriteLine("8. Avsluta");
 
             Console.Write("Välj: ");
-            string val = Console.ReadLine();
+            string val = Console.ReadLine() ?? "";
 
             switch (val)
             {
                 case "1":
                     RentMovie();
-                    //skapa en ny Rental kopplad till kundens Id, t ex: 
-                    //Rental rental = repo.CreateNewRental(customer.Id))
-                    //skapa och hämta ny MovieRental (skicka in movieCopy.Id och rental.Id)
                     break;
                 case "2":
                     repo.ShowAllMovies();
