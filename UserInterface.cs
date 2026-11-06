@@ -62,6 +62,12 @@ public class UserInterface
     public void RentMovie()
     {
         Customer? customer = GetCustomer();
+        if (customer == null)
+            return;
+
+        Rental rental = repo.CreateNewRental(customer.Id);
+        Console.WriteLine($"{rental.Id} {rental.CustomerId} {rental.RentalDate}");
+
         while (true)
         {
             MovieCopy? movieCopy = GetMovie();

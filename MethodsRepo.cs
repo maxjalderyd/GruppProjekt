@@ -17,7 +17,6 @@ public class Repository
             Password=C7AKQfWB#sha7n;
     """;
 
-
     public void CheckDateAndPrice()
     {
         using IDbConnection db = new MySqlConnection(connectionString);
@@ -37,11 +36,6 @@ public class Repository
         string sql = """
                     
                      """;
-    }
-
-    public void RentMovie(string movieToRent)
-    {
-
     }
 
     public MovieCopy? GetMovieWithBarcode(string barcode)
@@ -80,6 +74,21 @@ public class Repository
         return movieCopy;
     }
 
+    public Rental CreateNewRental(int customerId)
+    {
+        using IDbConnection db = new MySqlConnection(connectionString);
+        string sql = 
+        """
+        INSERT INTO Rental (CustomerId, RentalDate) values
+        (@CustomerId, CURRENT_TIMESTAMP);
+
+        SELECT * FROM Rental
+        WHERE Id = LAST_INSERT_ID()
+        """;
+
+        return db.QuerySingle<Rental>(sql, new {CustomerId = customerId});
+    }
+
     public void ShowAllMovies()
     {
         using IDbConnection db = new MySqlConnection(connectionString);
@@ -116,6 +125,7 @@ public class Repository
                     FROM Customer
                     """;
         IEnumerable<dynamic> customers = db.Query(CheckCustomerSql).ToList();
+
         foreach (var c in customers)
         {
             if (c.Name == name && DateOnly.FromDateTime(c.BirthDate) == birth && c.Email == mail && c.PhoneNumber == phone)
