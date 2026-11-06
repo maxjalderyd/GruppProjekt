@@ -8,7 +8,6 @@ using UtilityLibraries;
 
 public class Repository
 {
-
     string connectionString =
     """
     Server=comet-direct.usbx.me;
@@ -43,6 +42,42 @@ public class Repository
     public void RentMovie(string movieToRent)
     {
 
+    }
+
+    public MovieCopy? GetMovieWithBarcode(string barcode)
+    {
+        using MySqlConnection db = new(connectionString);
+        db.Open();
+
+        using MySqlCommand command = new(
+        """
+        SELECT 
+            m.Id as MovieId, m.Title, m.ReleaseDate, m.PricePerDay, mc.Id, mc.Barcode, mc.IsLoaned
+        FROM Movie m 
+        JOIN MovieCopy mc on m.Id = mc.MovieId
+        WHERE mc.Barcode = @barcode
+        """, db);
+        command.Parameters.AddWithValue("@barcode", barcode);
+
+        using MySqlDataReader reader = command.ExecuteReader();
+
+        if (!reader.Read())
+            return null;
+        
+        Movie movie = new(
+            reader.GetInt32("MovieId"),
+            reader.GetString("Title"),
+            reader.GetDateTime("ReleaseDate"),
+            reader.GetInt32("PricePerDay")
+        );
+        MovieCopy movieCopy = new(
+            reader.GetInt32("Id"), 
+            barcode, 
+            reader.GetBoolean("IsLoaned"),
+            movie
+        );
+
+        return movieCopy;
     }
 
     public void ShowAllMovies()
