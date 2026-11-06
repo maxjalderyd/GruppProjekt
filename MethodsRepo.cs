@@ -40,11 +40,11 @@ public class Repository
                      """;
     }
 
-    public void RentMovie()
+    public void RentMovie(string movieToRent)
     {
-        System.Console.WriteLine("vilken film vill du hyra?");
-        ShowAllMovies();
-        Console.ReadLine();
+        // ej klar
+        using IDbConnection db = new MySqlConnection(connectionString);
+        string sql =
     }
 
     public void ShowAllMovies()
@@ -73,5 +73,23 @@ public class Repository
                     """;
         IEnumerable<Movie> movies = db.Query<Movie>(sql).ToList();
         return movies;
+    }
+
+    public bool CheckCustomerId(string name, DateOnly birth, string mail, string phone)
+    {
+        using IDbConnection db = new MySqlConnection(connectionString);
+        var customers = db.Query<Customer>("""
+                                    SELECT Customer.Name, Customer.BirthDate, Customer.Email, Customer.PhoneNumber
+                                    FROM CUSTOMER
+                                    """).ToList();
+        foreach (Customer c in customers)
+        {
+            if (c.Name == name && c.BirthDate == birth && c.Email == mail && c.PhoneNumber == phone)
+            {
+                System.Console.WriteLine("Det stämde överens"); return true;
+            }
+            else System.Console.WriteLine("det stämde inte överäns"); return false;
+        }
+        return false;
     }
 }
