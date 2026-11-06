@@ -63,7 +63,7 @@ public class Repository
 
         if (!reader.Read())
             return null;
-        
+
         Movie movie = new(
             reader.GetInt32("MovieId"),
             reader.GetString("Title"),
@@ -71,8 +71,8 @@ public class Repository
             reader.GetInt32("PricePerDay")
         );
         MovieCopy movieCopy = new(
-            reader.GetInt32("Id"), 
-            barcode, 
+            reader.GetInt32("Id"),
+            barcode,
             reader.GetBoolean("IsLoaned"),
             movie
         );
@@ -124,5 +124,13 @@ public class Repository
                 );
         }
         return null;
+    }
+
+    public void GetNotReturnedMovies()
+    {
+        using IDbConnection connection = new MySqlConnection(connectionString);
+        string GetNotReturned = """
+                                
+                                """;
     }
 }
