@@ -6,10 +6,14 @@ namespace GruppProjekt;
 
 public class UserInterface
 {
+    private readonly Repository repo;
+    public UserInterface(Repository repo)
+    {
+        this.repo = repo;
+    }
 
     public void Start()
     {
-        Repository repo = new();
         while (true)
         {
             Console.WriteLine("Hej vad vill du göra?");
@@ -24,32 +28,10 @@ public class UserInterface
             switch (val)
             {
                 case "1":
-                    //hämta en Customer som kan kopplas till Rental
+                    RentMovie();
                     //skapa en ny Rental kopplad till kundens Id, t ex: 
                     //Rental rental = repo.CreateNewRental(customer.Id))
-
-                    //börja loopa här så man kan lägga in flera MovieCopy på en Rental
-                    MovieCopy? movieCopy = GetMovie(repo);
-                    if (movieCopy == null)
-                        continue;
                     //skapa och hämta ny MovieRental (skicka in movieCopy.Id och rental.Id)
-                    //börja om loop tills man inte vill lägga in mer filmer
-
-                    repo.ShowAllMovies();
-                    System.Console.WriteLine("vilken film vill du hyra?");
-                    string movieToRent = Console.ReadLine();
-                    repo.RentMovie(movieToRent);
-                    System.Console.WriteLine("vad heter du?");
-                    string name = Console.ReadLine();
-                    System.Console.WriteLine("Vad är ditt person nummer?");
-                    string birthdateString = Console.ReadLine();
-                    DateOnly birthDate = DateOnly.Parse(birthdateString);
-                    System.Console.WriteLine("vad är din mail?");
-                    string mail = Console.ReadLine();
-                    System.Console.WriteLine("vad är ditt telefon nummer?");
-                    string phone = Console.ReadLine();
-                    repo.CheckCustomerId(name, birthDate, mail, phone);
-                    repo.RentMovie(movieToRent);
                     break;
                 case "2":
                     repo.ShowAllMovies();
@@ -68,13 +50,52 @@ public class UserInterface
                     return;
             }
         }
-
     }
 
-    public MovieCopy? GetMovie(Repository repo)
+    public void RentMovie()
+    {
+        Customer? customer = GetCustomer();
+        while (true)
+        {
+            MovieCopy? movieCopy = GetMovie();
+            if (movieCopy == null)
+                continue;
+        }
+    }
+    public Customer? GetCustomer()
+    {
+        while (true)
+        {
+            Console.WriteLine("Tryck [Q] för att avsluta.");
+            Console.WriteLine("vad heter du?");
+            string name = Console.ReadLine() ?? "";
+
+            if (name.Equals("Q", StringComparison.OrdinalIgnoreCase))
+                return null;
+
+            Console.WriteLine("Vad är ditt person nummer?");
+            string birthdateString = Console.ReadLine() ?? "";
+            DateOnly birthDate = DateOnly.Parse(birthdateString);
+
+            Console.WriteLine("vad är din mail?");
+            string mail = Console.ReadLine() ?? "";
+
+            Console.WriteLine("vad är ditt telefon nummer?");
+            string phone = Console.ReadLine() ?? "";
+
+            Customer? customer = repo.GetCustomer(name, birthDate, mail, phone);
+            if (customer == null)
+            {
+                Console.WriteLine("Det finns ingen kund som matchar.");
+                continue;
+            }
+            return customer;
+        }
+    }
+    public MovieCopy? GetMovie()
     {
         Console.Write("Ange streckkod:\n> ");
-        string barcode = Console.ReadLine();
+        string barcode = Console.ReadLine() ?? "";
         MovieCopy? movieCopy = repo.GetMovieWithBarcode(barcode);
         if (movieCopy == null)
         {

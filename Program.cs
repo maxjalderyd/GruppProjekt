@@ -1,3 +1,4 @@
 ﻿using GruppProjekt;
-UserInterface userInterface = new();
+Repository repo = new();
+UserInterface userInterface = new(repo);
 userInterface.Start();
