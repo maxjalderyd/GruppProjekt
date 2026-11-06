@@ -128,11 +128,12 @@ public class Repository
 
     public List<DTO> GetLateReturns()
     {
+        List<DTO> dTOs = new List<DTO>();
         using IDbConnection connection = new MySqlConnection(connectionString);
         string GetNotReturned =
 """
-SELECT Customer.Name, MovieCopy.Barcode, Movie.Title, datediff(curdate(), MovieRental.ExpectedReturnDate) as AntaldagarFörsent,
-sum(datediff(curdate(),MovieRental.ExpectedReturnDate) * MovieRental.PricePerDay) as Kostnad
+SELECT Customer.Name AS Name, MovieCopy.Barcode AS Barcode, Movie.Title AS MovieTitle, datediff(curdate(), MovieRental.ExpectedReturnDate) AS NumberOfDaysLate,
+sum(datediff(curdate(),MovieRental.ExpectedReturnDate) * MovieRental.PricePerDay) AS DaysLatePrice
 FROM MovieCopy
 INNER JOIN MovieRental ON MovieCopy.Id = MovieRental.MovieCopyId
 INNER JOIN Rental ON MovieRental.OrderId = Rental.Id
@@ -142,12 +143,19 @@ where curdate() > MovieRental.ExpectedReturnDate && ReturnDate is null
 group by Customer.Name,Customer.Id, MovieCopy.Barcode, Movie.Title, MovieRental.ExpectedReturnDate
 order by Customer.Id desc      
 """;
-        List<DTO> dTOs = new List<DTO>();
         IEnumerable<DTO> list = connection.Query<DTO>(GetNotReturned).ToList();
         foreach (DTO d in list)
         {
             dTOs.Add(new DTO(d.Name, d.Barcode, d.MovieTitle, d.NumberOfDaysLate, d.DaysLatePrice));
         }
         return dTOs;
+    }
+
+    public void ShowAllLateMovies(List<DTO> DtoList)
+    {
+        foreach (DTO d in DtoList)
+        {
+            System.Console.WriteLine($"Name: {d.Name} Barcode: {d.Barcode}, Movietitle: {d.MovieTitle} Days to late: {d.NumberOfDaysLate} Price: {d.DaysLatePrice}  ");
+        }
     }
 }

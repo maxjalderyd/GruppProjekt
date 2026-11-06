@@ -41,6 +41,7 @@ public class UserInterface
                 case "3":
                     return;
                 case "4":
+                    repo.ShowAllLateMovies(repo.GetLateReturns());
                     return;
                 case "5":
                     return;
