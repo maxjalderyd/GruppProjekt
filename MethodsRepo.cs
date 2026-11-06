@@ -126,11 +126,28 @@ public class Repository
         return null;
     }
 
-    public void GetNotReturnedMovies()
+    public List<DTO> GetLateReturns()
     {
         using IDbConnection connection = new MySqlConnection(connectionString);
-        string GetNotReturned = """
-                                
-                                """;
+        string GetNotReturned =
+"""
+SELECT Customer.Name, MovieCopy.Barcode, Movie.Title, datediff(curdate(), MovieRental.ExpectedReturnDate) as AntaldagarFörsent,
+sum(datediff(curdate(),MovieRental.ExpectedReturnDate) * MovieRental.PricePerDay) as Kostnad
+FROM MovieCopy
+INNER JOIN MovieRental ON MovieCopy.Id = MovieRental.MovieCopyId
+INNER JOIN Rental ON MovieRental.OrderId = Rental.Id
+inner join Movie on MovieCopy.MovieId = Movie.Id
+Inner join Customer on Rental.CustomerId = Customer.Id
+where curdate() > MovieRental.ExpectedReturnDate && ReturnDate is null
+group by Customer.Name,Customer.Id, MovieCopy.Barcode, Movie.Title, MovieRental.ExpectedReturnDate
+order by Customer.Id desc      
+""";
+        List<DTO> dTOs = new List<DTO>();
+        IEnumerable<DTO> list = connection.Query<DTO>(GetNotReturned).ToList();
+        foreach (DTO d in list)
+        {
+            dTOs.Add(new DTO(d.Name, d.Barcode, d.MovieTitle, d.NumberOfDaysLate, d.DaysLatePrice));
+        }
+        return dTOs;
     }
 }

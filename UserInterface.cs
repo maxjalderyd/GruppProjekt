@@ -19,7 +19,12 @@ public class UserInterface
             Console.WriteLine("Hej vad vill du göra?");
             Console.WriteLine("1. Hyra en film");
             Console.WriteLine("2. Visa alla filmer");
-            Console.WriteLine("3. ");
+            Console.WriteLine("3. lÄGG IN EN NY FILM"); // peter
+            Console.WriteLine("?");
+            Console.WriteLine("?");
+            Console.WriteLine("?");
+            Console.WriteLine("?");
+            Console.WriteLine("Visa kvitton");
             Console.WriteLine("7. Avsluta");
 
             Console.Write("Välj: ");
