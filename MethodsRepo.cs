@@ -108,21 +108,21 @@ public class Repository
         return movies;
     }
 
-    public bool CheckCustomerId(string name, DateOnly birth, string mail, string phone)
+    public Customer? GetCustomer(string name, DateOnly birth, string mail, string phone)
     {
         using IDbConnection db = new MySqlConnection(connectionString);
         string CheckCustomerSql = """
                     SELECT Customer.Id, Customer.Name, Customer.BirthDate, Customer.Email, Customer.PhoneNumber
                     FROM Customer
                     """;
-        IEnumerable<Customer> customers = db.Query<Customer>(CheckCustomerSql).ToList();
-        foreach (Customer c in customers)
+        IEnumerable<dynamic> customers = db.Query(CheckCustomerSql).ToList();
+        foreach (var c in customers)
         {
-            if (c.Name == name && c.BirthDate == birth && c.Email == mail && c.PhoneNumber == phone)
-            {
-                System.Console.WriteLine("Det stämde överens"); return true;
-            }
+            if (c.Name == name && DateOnly.FromDateTime(c.BirthDate) == birth && c.Email == mail && c.PhoneNumber == phone)
+                return new Customer(
+                    c.Id, c.Name, c.BirthDate, c.Email, c.PhoneNumber
+                );
         }
-        System.Console.WriteLine("det stämde inte överäns"); return false;
+        return null;
     }
 }
