@@ -20,7 +20,7 @@ public class UserInterface
             Console.WriteLine("1. Hyra en film");
             Console.WriteLine("2. Visa alla filmer");
             Console.WriteLine("3. lÄGG IN EN NY FILM"); // peter
-            Console.WriteLine("?");
+            Console.WriteLine("4. visa alla försenade filmer");
             Console.WriteLine("?");
             Console.WriteLine("?");
             Console.WriteLine("?");
@@ -44,6 +44,7 @@ public class UserInterface
                 case "3":
                     return;
                 case "4":
+                    repo.ShowAllLateMovies(repo.GetLateReturns());
                     return;
                 case "5":
                     return;

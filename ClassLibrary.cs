@@ -89,14 +89,16 @@ public class DTO
     public string Barcode { get; private set; }
     public string MovieTitle { get; private set; }
     public int NumberOfDaysLate { get; private set; }
-    public int DaysLatePrice { get; private set; }
+    public decimal DaysLatePrice { get; private set; }
 
-    public DTO(string name, string barcode, string movietitle, int days, int price)
+
+    public DTO(string name, string barcode, string movieTitle,
+       int numberOfDaysLate, decimal daysLatePrice)
     {
         Name = name;
         Barcode = barcode;
-        MovieTitle = movietitle;
-        NumberOfDaysLate = days;
-        DaysLatePrice = price;
+        MovieTitle = movieTitle;
+        NumberOfDaysLate = numberOfDaysLate;
+        DaysLatePrice = daysLatePrice;
     }
 }
