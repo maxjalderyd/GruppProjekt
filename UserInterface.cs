@@ -25,7 +25,7 @@ public class UserInterface
             Console.WriteLine("6. Ta bort film ur katalog");
             Console.WriteLine("7. Skicka faktura");
             Console.WriteLine("8. Visa försenade lån"); //max
-            Console.WriteLine("8. Avsluta");
+            Console.WriteLine("9. Avsluta");
 
             Console.Write("Välj: ");
             string val = Console.ReadLine() ?? "";
@@ -41,13 +41,17 @@ public class UserInterface
                 case "3":
                     return;
                 case "4":
-                    repo.ShowAllLateMovies(repo.GetLateReturns());
                     return;
                 case "5":
                     return;
                 case "6":
                     return;
                 case "7":
+                    return;
+                case "8":
+                    repo.ShowAllLateMovies(repo.GetLateReturns());
+                    return;
+                case "9":
                     System.Console.WriteLine("avslutar");
                     Thread.Sleep(2000);
                     return;
