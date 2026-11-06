@@ -2,6 +2,7 @@ using System;
 using MySql.Data.MySqlClient;
 using Dapper;
 using System.Data;
+using UtilityLibraries;
 
 
 
@@ -29,5 +30,28 @@ public class Repository
                     END;
                     """;
         db.Execute(sql);
+    }
+
+    public void RentMovie()
+    {
+        System.Console.WriteLine("vilken film vill du hyra?");
+        ShowAllMovies();
+        Console.ReadLine();
+    }
+
+    public void ShowAllMovies()
+    {
+        using IDbConnection db = new MySqlConnection(connectionString);
+        string sql = """
+                    SELECT Movie.Id, Movie.Title, Movie.ReleaseDate, Movie.PricePerDay
+                    FROM Movie
+                    INNER JOIN MovieCopy on Movie.Id = MovieCopy.MovieId
+                    WHERE MovieCopy.IsLoaned = false
+                    """;
+        IEnumerable<Movie> movies = db.Query<Movie>(sql).ToList();
+        foreach (Movie m in movies)
+        {
+            System.Console.WriteLine($"{m.Title}, {m.PricePerDay}");
+        }
     }
 }
