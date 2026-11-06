@@ -17,15 +17,15 @@ public class UserInterface
         while (true)
         {
             Console.WriteLine("Hej vad vill du göra?");
-            Console.WriteLine("1. Hyra en film");
+            Console.WriteLine("1. Hyra film"); //vanja
             Console.WriteLine("2. Visa alla filmer");
-            Console.WriteLine("3. lÄGG IN EN NY FILM"); // peter
-            Console.WriteLine("?");
-            Console.WriteLine("?");
-            Console.WriteLine("?");
-            Console.WriteLine("?");
-            Console.WriteLine("Visa kvitton");
-            Console.WriteLine("7. Avsluta");
+            Console.WriteLine("3. Lägg in ny film"); // peter
+            Console.WriteLine("4. Lämna tillbaka film");
+            Console.WriteLine("5. Lägg till ny kund");
+            Console.WriteLine("6. Ta bort film ur katalog");
+            Console.WriteLine("7. Skicka faktura");
+            Console.WriteLine("8. Visa försenade lån");
+            Console.WriteLine("8. Avsluta");
 
             Console.Write("Välj: ");
             string val = Console.ReadLine();
