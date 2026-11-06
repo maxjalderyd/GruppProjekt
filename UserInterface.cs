@@ -27,7 +27,6 @@ public class UserInterface
                     System.Console.WriteLine("vilken film vill du hyra?");
                     string movieToRent = Console.ReadLine();
                     repo.RentMovie(movieToRent);
-
                     System.Console.WriteLine("vad heter du?");
                     string name = Console.ReadLine();
                     System.Console.WriteLine("Vad är ditt person nummer?");
@@ -37,7 +36,6 @@ public class UserInterface
                     string mail = Console.ReadLine();
                     System.Console.WriteLine("vad är ditt telefon nummer?");
                     string phone = Console.ReadLine();
-
                     repo.CheckCustomerId(name, birthDate, mail, phone);
                     repo.RentMovie(movieToRent);
                     break;

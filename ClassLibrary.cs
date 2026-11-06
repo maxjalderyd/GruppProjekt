@@ -39,11 +39,11 @@ public class Customer
     public DateOnly BirthDate { get; set; }
     public string Email { get; set; }
     public string PhoneNumber { get; set; }
-    public Customer(int id, string name, DateOnly birthDate, string email, string phoneNumber)
+    public Customer(int id, string name, DateTime birthDate, string email, string phoneNumber)
     {
         Id = id;
         Name = name;
-        BirthDate = birthDate;
+        BirthDate = DateOnly.FromDateTime(birthDate);
         Email = email;
         PhoneNumber = phoneNumber;
     }
