@@ -8,12 +8,12 @@ public class UserInterface
 
     public void Start()
     {
-
+        Repository repo = new();
         while (true)
         {
             Console.WriteLine("Hej vad vill du göra?");
             Console.WriteLine("1. Hyra en film");
-            Console.WriteLine("Hej vad vill du göra?");
+            Console.WriteLine("2. Visa alla filmer");
             Console.WriteLine("Hej vad vill du göra?");
             Console.WriteLine("7. Avsluta");
 
@@ -23,10 +23,10 @@ public class UserInterface
             switch (val)
             {
                 case "1":
-                    Repository repository1 = new();
-                    repository1.RentMovie();
+                    repo.RentMovie();
                     break;
                 case "2":
+                    repo.ShowAllMovies();
                     return;
                 case "3":
                     return;

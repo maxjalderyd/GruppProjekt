@@ -32,6 +32,14 @@ public class Repository
         db.Execute(sql);
     }
 
+    public void SendBackOldBooks()
+    {
+        using IDbConnection db = new MySqlConnection(connectionString);
+        string sql = """
+                    
+                     """;
+    }
+
     public void RentMovie()
     {
         System.Console.WriteLine("vilken film vill du hyra?");
@@ -53,5 +61,17 @@ public class Repository
         {
             System.Console.WriteLine($"{m.Title}, {m.PricePerDay}");
         }
+    }
+    public IEnumerable<Movie> GetAllNotRentedMovies()
+    {
+        using IDbConnection db = new MySqlConnection(connectionString);
+        string sql = """
+                    SELECT Movie.Id, Movie.Title, Movie.ReleaseDate, Movie.PricePerDay
+                    FROM Movie
+                    INNER JOIN MovieCopy on Movie.Id = MovieCopy.MovieId
+                    WHERE MovieCopy.IsLoaned = false
+                    """;
+        IEnumerable<Movie> movies = db.Query<Movie>(sql).ToList();
+        return movies;
     }
 }
