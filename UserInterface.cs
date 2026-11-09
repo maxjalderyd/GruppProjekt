@@ -72,13 +72,15 @@ public class UserInterface
 
         Rental rental = repo.CreateNewRental(customer.Id);
 
+        //Skapa kvitto
+
         while (true)
         {
             (MovieCopy? movieCopy, int rentalDays) = GetMovie();
             if (movieCopy == null)
                 continue;
 
-            //Skapa MovieRental objekt och spara i databasen
+            //Skapa MovieRental objekt och spara i databasen samt uppdatera IsLoaned = true
             DateOnly dueDate = DateOnly.FromDateTime(DateTime.Today).AddDays(rentalDays);
             MovieRental movieRental = new(
                 rental.Id,
@@ -90,11 +92,16 @@ public class UserInterface
             repo.CreateNewMovieRental(movieRental);
             Console.WriteLine($"{movieCopy.Movie.Title} lades till.");
 
+            //Lägg till movieCopy i receipt MovieCopy listan
+
             Console.Write("Vill du lägga till fler filmer [Y] eller [N]?\n> ");
             string answer = Console.ReadLine() ?? "";
             if (answer.Equals("N", StringComparison.OrdinalIgnoreCase))
                 break;
         }
+
+        //Räkna ut totalsumman, skriv ut kvitto.
+
     }
     public Customer? GetCustomer()
     {

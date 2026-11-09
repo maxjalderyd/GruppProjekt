@@ -201,7 +201,11 @@ order by Customer.Id desc
         string sql = 
         """
         INSERT INTO MovieRental(OrderId, MovieCopyId, ReturnDate, ExpectedReturnDate, PricePerDay)
-        VALUES (@RentalId, @MovieCopyId, @ReturnDate, @ExpectedReturnDate, @PricePerDay)
+        VALUES (@RentalId, @MovieCopyId, @ReturnDate, @ExpectedReturnDate, @PricePerDay);
+
+        UPDATE MovieCopy 
+        SET IsLoaned = TRUE
+        WHERE Id = @MovieCopyId
         """;
         db.Execute(sql, movieRental);
     }
