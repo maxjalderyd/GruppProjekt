@@ -104,14 +104,29 @@ public class DTO
         DaysLatePrice = daysLatePrice;
     }
 
+    public class RentalContext
+    {
+        public string CustomerName { get; set; } = null!;
+        public List<MovieRental> items = new();
+        public decimal TotalCost;
+        public DateOnly RentalDate;
+    }
     public interface IDiscounts
     {
-        string Name { get; set; } // Namn På Rabbaten tex "BlackWeek 20"
-        decimal Percentage { get; set; }    // procent att applicera på rabbaten
+        string Name { get; } // Namn På Rabbaten tex "BlackWeek 20"
         bool IsApplicable { get; set; } // jämnför så att rabbaten är applicerbar tex 3 för 2. krävs att du har 3 filmer etc
-        decimal CalculateDiscount(); // räknar ut hur mycket som skall dras av från original priset i kronor
-        decimal PrivateSellerDeal(); // låter säljaren välja en procent.
+        decimal CalculateDiscount(RentalContext context); // räknar ut hur mycket som skall dras av från original priset i kronor
 
+    }
 
+    public class SellersDiscount : IDiscounts
+    {
+        private readonly decimal _percentage;
+        string IDiscounts.Name => "SellersDeal";
+        bool IDiscounts.IsApplicable { get; set; }
+        decimal IDiscounts.CalculateDiscount(RentalContext context)
+        {
+            return _percentage;
+        }
     }
 }
