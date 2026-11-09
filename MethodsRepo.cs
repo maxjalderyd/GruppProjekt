@@ -210,4 +210,15 @@ order by Customer.Id desc
         db.Execute(sql, movieRental);
     }
 
+    public int CreateNewCustomer(string name, DateOnly birthDate, string email, string phoneNumber)
+    {
+        using IDbConnection db = new MySqlConnection(connectionString);
+        string sql = 
+        """
+        INSERT INTO Customer (Name, BirthDate, Email, PhoneNumber)
+        VALUES (@name, @birthDate, @email, @phoneNumber)
+        """;
+        return db.Execute(sql, new {name, birthDate, email, phoneNumber});
+    }
+
 }

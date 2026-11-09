@@ -45,7 +45,8 @@ public class UserInterface
                     repo.ShowAllLateMovies(repo.GetLateReturns());
                     return;
                 case "5":
-                    return;
+                    CreateNewCustomer();
+                    break;
                 case "6":
                     System.Console.WriteLine("vilken film vill du radera? Namn");
                     repo.ShowAllMovies();
@@ -151,12 +152,36 @@ public class UserInterface
         }
 
         Console.Write("I hur många dagar vill du hyra filmen?\n> ");
-        //Lägg in kontroll senare för att se till att det är ett giltigt värde på rentalDays
-        int rentalDays = int.Parse(Console.ReadLine());
+
+        int rentalDays = int.Parse(Console.ReadLine()!);
         return (movieCopy, rentalDays);
     }
+    public void CreateNewCustomer()
+    {
+        Console.Write("Namn: ");
+        string name = Console.ReadLine() ?? "";
 
+        Console.Write("Födelsedatum (YYYY-MM-DD): ");
+        string strBirthDate = Console.ReadLine() ?? "";
+        DateOnly birthDate;
+        while (!DateOnly.TryParse(strBirthDate, out birthDate))
+        {
+            Console.Write("Ogiltigt datum. YYYY-MM-DD: ");
+            strBirthDate = Console.ReadLine() ?? "";
+        }
 
+        Console.Write("Email: ");
+        string email = Console.ReadLine() ?? "";
 
+        Console.Write("Telefonnummer: ");
+        string phoneNumber = Console.ReadLine() ?? "";
 
+        int rowsAffected = repo.CreateNewCustomer(name, birthDate, email, phoneNumber);
+        if (rowsAffected == 1)
+            Console.WriteLine("Kunden las till.");
+        else
+            Console.WriteLine("Kunde inte lägga till kund.");
+
+        Thread.Sleep(3000);
+    }
 }
