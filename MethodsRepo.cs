@@ -23,8 +23,8 @@ public class Repository
         string sql = """
                     UPDATE Movie
                     SET PricePerDay = CASE
-                    WHEN ReleaseDate >= '2000-01-01' THEN 47
-                    ELSE 27
+                    WHEN ReleaseDate >= '2000-01-01' THEN 49
+                    ELSE 29
                     END;
                     """;
         db.Execute(sql);
@@ -96,7 +96,7 @@ public class Repository
                     SELECT Movie.Id, Movie.Title, Movie.ReleaseDate, Movie.PricePerDay
                     FROM Movie
                     INNER JOIN MovieCopy on Movie.Id = MovieCopy.MovieId
-                    WHERE MovieCopy.IsLoaned = false
+                    WHERE MovieCopy.IsLoaned = false AND Movie.IsDeleted = 0
                     """;
         IEnumerable<Movie> movies = db.Query<Movie>(sql).ToList();
         foreach (Movie m in movies)
@@ -111,7 +111,7 @@ public class Repository
                     SELECT Movie.Id, Movie.Title, Movie.ReleaseDate, Movie.PricePerDay
                     FROM Movie
                     INNER JOIN MovieCopy on Movie.Id = MovieCopy.MovieId
-                    WHERE MovieCopy.IsLoaned = false
+                    WHERE MovieCopy.IsLoaned = false AND Movie.IsDeleted = 0
                     """;
         IEnumerable<Movie> movies = db.Query<Movie>(sql).ToList();
         return movies;
@@ -149,7 +149,7 @@ INNER JOIN MovieRental ON MovieCopy.Id = MovieRental.MovieCopyId
 INNER JOIN Rental ON MovieRental.OrderId = Rental.Id
 inner join Movie on MovieCopy.MovieId = Movie.Id
 Inner join Customer on Rental.CustomerId = Customer.Id
-where curdate() > MovieRental.ExpectedReturnDate && ReturnDate is null
+where curdate() > MovieRental.ExpectedReturnDate && ReturnDate is null AND Movie.IsDeleted = 0
 group by Customer.Name, Customer.PhoneNumber, Customer.Id, MovieCopy.Barcode, Movie.Title, MovieRental.ExpectedReturnDate
 order by Customer.Id desc      
 """;
