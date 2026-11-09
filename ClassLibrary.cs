@@ -104,7 +104,7 @@ public class DTO
         DaysLatePrice = daysLatePrice;
     }
 
-    public class RentalContext
+    public class RentalContext // klass som håller information att föra in i discounts klasser.
     {
         public string CustomerName { get; set; } = null!;
         public List<MovieRental> items = new();
