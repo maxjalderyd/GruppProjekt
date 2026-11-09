@@ -19,7 +19,6 @@ public class UserInterface
             Console.WriteLine("Hej vad vill du göra?");
             Console.WriteLine("1. Hyra film"); //vanja
             Console.WriteLine("2. Visa alla filmer");
-<<<<<<< HEAD
             Console.WriteLine("3. Lägg in ny film"); // peter
             Console.WriteLine("4. Lämna tillbaka film");
             Console.WriteLine("5. Lägg till ny kund"); //vanja
@@ -27,16 +26,6 @@ public class UserInterface
             Console.WriteLine("7. Skicka faktura");
             Console.WriteLine("8. Visa försenade lån"); //max
             Console.WriteLine("9. Avsluta");
-=======
-            Console.WriteLine("3. lÄGG IN EN NY FILM"); // peter
-            Console.WriteLine("4. visa alla försenade filmer");
-            Console.WriteLine("?");
-            Console.WriteLine("?");
-            Console.WriteLine("?");
-            Console.WriteLine("Visa kvitton");
-            Console.WriteLine("7. Avsluta");
->>>>>>> e3134e0 (refactor: update DTO to use decimal for DaysLatePrice and enhance GetLateReturns method)
-
             Console.Write("Välj: ");
             string val = Console.ReadLine() ?? "";
 
