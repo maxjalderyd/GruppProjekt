@@ -103,4 +103,15 @@ public class DTO
         NumberOfDaysLate = numberOfDaysLate;
         DaysLatePrice = daysLatePrice;
     }
+
+    public interface IDiscounts
+    {
+        string Name { get; set; } // Namn På Rabbaten tex "BlackWeek 20"
+        decimal Percentage { get; set; }    // procent att applicera på rabbaten
+        bool IsApplicable { get; set; } // jämnför så att rabbaten är applicerbar tex 3 för 2. krävs att du har 3 filmer etc
+        decimal CalculateDiscount(); // räknar ut hur mycket som skall dras av från original priset i kronor
+        decimal PrivateSellerDeal(); // låter säljaren välja en procent.
+
+
+    }
 }
