@@ -173,11 +173,12 @@ order by Customer.Id desc
     {
         // Hämta filmens Id
         using IDbConnection connection = new MySqlConnection(connectionString);
-        string sqlGetMovieId = "SELECT Movie.Id WHERE Movie.Title = @Title";
+        string sqlGetMovieId = "SELECT Movie.Id FROM Movie WHERE Movie.Title = @Title";
         int? movieId = connection.QueryFirstOrDefault<int?>(sqlGetMovieId, new { Title = movieName });
         if (movieId == null)
         {
             System.Console.WriteLine("fanns ingen film med det namnet");
+            return;
         }
 
         string CheckActiveRentals = @"SELECT EXISTS (
@@ -187,15 +188,16 @@ order by Customer.Id desc
                                     INNER JOIN Movie ON MovieCopy.MovieId = Movie.Id
                                     WHERE Movie.Id = @movieId AND MovieRental.ReturnDate IS NULL
                                     );";
-        bool hasActiveRentals = connection.ExecuteScalar<bool>(CheckActiveRentals, new { MovieId = movieId });
+        bool hasActiveRentals = connection.ExecuteScalar<bool>(CheckActiveRentals, new { movieId });
         if (hasActiveRentals == true)
         {
             System.Console.WriteLine($"kan ej radera {movieName} då det finns aktiva uthyrningar på den");
+            return;
         }
 
-        string deleteSql = "DELETE FROM Movie WHERE MovieId = @movieId";
-        connection.Execute(deleteSql)
-        System.Console.WriteLine($"{movieName}: Har raderats från systemet");
+        string deleteSql = "DELETE FROM Movie WHERE Movie.Id = @movieId";
+        connection.Execute(deleteSql, new { movieId });
+        System.Console.WriteLine($"Filmen {movieName}: Har raderats från systemet");
 
     }
 }
