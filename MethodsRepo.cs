@@ -30,13 +30,6 @@ public class Repository
         db.Execute(sql);
     }
 
-    public void SendBackOldBooks()
-    {
-        using IDbConnection db = new MySqlConnection(connectionString);
-        string sql = """
-                    
-                     """;
-    }
 
     public MovieCopy? GetMovieWithBarcode(string barcode)
     {
@@ -202,4 +195,6 @@ order by Customer.Id desc
         System.Console.WriteLine($"Filmen {movieName}: Har raderats från systemet");
 
     }
+
+
 }

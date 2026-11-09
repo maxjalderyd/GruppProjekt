@@ -103,30 +103,45 @@ public class DTO
         NumberOfDaysLate = numberOfDaysLate;
         DaysLatePrice = daysLatePrice;
     }
+}
 
-    public class RentalContext // klass som håller information att föra in i discounts klasser.
-    {
-        public string CustomerName { get; set; } = null!;
-        public List<MovieRental> items = new();
-        public decimal TotalCost;
-        public DateOnly RentalDate;
-    }
-    public interface IDiscounts
-    {
-        string Name { get; } // Namn På Rabbaten tex "BlackWeek 20"
-        bool IsApplicable { get; set; } // jämnför så att rabbaten är applicerbar tex 3 för 2. krävs att du har 3 filmer etc
-        decimal CalculateDiscount(RentalContext context); // räknar ut hur mycket som skall dras av från original priset i kronor
+// public class RentalContext // klass som håller information att föra in i discounts klasser.
+// {
+//     public string CustomerName { get; set; } = null!;
+//     public List<MovieRental> items = new();
+//     public decimal TotalCost;
+//     public DateOnly RentalDate;
+// }
+// public interface IDiscounts
+// {
+//     string Name { get; } // Namn På Rabbaten tex "BlackWeek 20"
+//     bool IsApplicable { get; set; } // jämnför så att rabbaten är applicerbar tex 3 för 2. krävs att du har 3 filmer etc
+//     decimal CalculateDiscount(RentalContext context); // räknar ut hur mycket som skall dras av från original priset i kronor
 
-    }
+// }
 
-    public class SellersDiscount : IDiscounts
+// public class SellersDiscount : IDiscounts
+// {
+//     private readonly decimal _percentage;
+//     string IDiscounts.Name => "SellersDeal";
+//     bool IDiscounts.IsApplicable { get; set; }
+//     decimal IDiscounts.CalculateDiscount(RentalContext context)
+//     {
+//         return _percentage;
+//     }
+// }
+
+public class Receipt
+{
+    private int _orderNumber;
+    public int OrderNumber => _orderNumber;
+    readonly string CustomerName;
+    readonly List<MovieCopy> movies = new();
+    decimal TotalPrice { get; set; }
+    public Receipt()
     {
-        private readonly decimal _percentage;
-        string IDiscounts.Name => "SellersDeal";
-        bool IDiscounts.IsApplicable { get; set; }
-        decimal IDiscounts.CalculateDiscount(RentalContext context)
-        {
-            return _percentage;
-        }
+        _orderNumber = Random.Shared.Next(111111, 999999);
+
     }
 }
+
