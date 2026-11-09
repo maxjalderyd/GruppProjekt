@@ -14,6 +14,7 @@ public class UserInterface
 
     public void Start()
     {
+        repo.CheckDateAndPrice();
         while (true)
         {
             Console.WriteLine("Hej vad vill du göra?");
