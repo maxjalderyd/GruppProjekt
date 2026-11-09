@@ -168,4 +168,34 @@ order by Customer.Id desc
             System.Console.WriteLine($"Name: {d.Name} Phone: {d.PhoneNumber} Barcode: {d.Barcode}, Movietitle: {d.MovieTitle} Days to late: {d.NumberOfDaysLate} Price: {d.DaysLatePrice}  ");
         }
     }
+
+    public void DeleteMovie(string movieName)
+    {
+        // Hämta filmens Id
+        using IDbConnection connection = new MySqlConnection(connectionString);
+        string sqlGetMovieId = "SELECT Movie.Id WHERE Movie.Title = @Title";
+        int? movieId = connection.QueryFirstOrDefault<int?>(sqlGetMovieId, new { Title = movieName });
+        if (movieId == null)
+        {
+            System.Console.WriteLine("fanns ingen film med det namnet");
+        }
+
+        string CheckActiveRentals = @"SELECT EXISTS (
+                                    SELECT 1
+                                    FROM MovieRental
+                                    INNER JOIN MovieCopy ON MovieRental.MovieCopyId = MovieCopy.Id
+                                    INNER JOIN Movie ON MovieCopy.MovieId = Movie.Id
+                                    WHERE Movie.Id = @movieId AND MovieRental.ReturnDate IS NULL
+                                    );";
+        bool hasActiveRentals = connection.ExecuteScalar<bool>(CheckActiveRentals, new { MovieId = movieId });
+        if (hasActiveRentals == true)
+        {
+            System.Console.WriteLine($"kan ej radera {movieName} då det finns aktiva uthyrningar på den");
+        }
+
+        string deleteSql = "DELETE FROM Movie WHERE MovieId = @movieId";
+        connection.Execute(deleteSql)
+        System.Console.WriteLine($"{movieName}: Har raderats från systemet");
+
+    }
 }

@@ -45,6 +45,9 @@ public class UserInterface
                 case "5":
                     return;
                 case "6":
+                    System.Console.WriteLine("vilken film vill du radera? Namn");
+                    repo.ShowAllMovies();
+                    repo.DeleteMovie(Console.ReadLine());
                     return;
                 case "7":
                     return;
@@ -122,4 +125,8 @@ public class UserInterface
         }
         return movieCopy;
     }
+
+
+
+
 }
