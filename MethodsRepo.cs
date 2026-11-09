@@ -173,11 +173,11 @@ order by Customer.Id desc
     {
         // Hämta filmens Id
         using IDbConnection connection = new MySqlConnection(connectionString);
-        string sqlGetMovieId = "SELECT Movie.Id FROM Movie WHERE Movie.Title = @Title";
+        string sqlGetMovieId = "SELECT Movie.Id FROM Movie WHERE IsDeleted = 0 AND Movie.Title = @Title";
         int? movieId = connection.QueryFirstOrDefault<int?>(sqlGetMovieId, new { Title = movieName });
         if (movieId == null)
         {
-            System.Console.WriteLine("fanns ingen film med det namnet");
+            System.Console.WriteLine("fanns ingen film med det namnet eller redan markerats som INAKTIV");
             return;
         }
 
@@ -195,8 +195,10 @@ order by Customer.Id desc
             return;
         }
 
-        string deleteSql = "DELETE FROM Movie WHERE Movie.Id = @movieId";
-        connection.Execute(deleteSql, new { movieId });
+        string softDeleteSql = @"UPDATE Movie
+                                SET IsDeleted = 1
+                                WHERE Movie.Id = @movieId";
+        connection.Execute(softDeleteSql, new { movieId });
         System.Console.WriteLine($"Filmen {movieName}: Har raderats från systemet");
 
     }
