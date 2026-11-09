@@ -1,5 +1,6 @@
 using Dapper;
 using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI.CRUD;
 using UtilityLibraries;
 
 namespace GruppProjekt;
@@ -70,13 +71,29 @@ public class UserInterface
             return;
 
         Rental rental = repo.CreateNewRental(customer.Id);
-        Console.WriteLine($"{rental.Id} {rental.CustomerId} {rental.RentalDate}");
 
         while (true)
         {
-            MovieCopy? movieCopy = GetMovie();
+            (MovieCopy? movieCopy, int rentalDays) = GetMovie();
             if (movieCopy == null)
                 continue;
+
+            //Skapa MovieRental objekt och spara i databasen
+            DateOnly dueDate = DateOnly.FromDateTime(DateTime.Today).AddDays(rentalDays);
+            MovieRental movieRental = new(
+                rental.Id,
+                movieCopy.Id,
+                null,
+                dueDate,
+                movieCopy.Movie.PricePerDay
+            );
+            repo.CreateNewMovieRental(movieRental);
+            Console.WriteLine($"{movieCopy.Movie.Title} lades till.");
+
+            Console.Write("Vill du lägga till fler filmer [Y] eller [N]?\n> ");
+            string answer = Console.ReadLine() ?? "";
+            if (answer.Equals("N", StringComparison.OrdinalIgnoreCase))
+                break;
         }
     }
     public Customer? GetCustomer()
@@ -109,22 +126,27 @@ public class UserInterface
             return customer;
         }
     }
-    public MovieCopy? GetMovie()
+    public (MovieCopy? movieCopy, int rentalDays) GetMovie()
     {
         Console.Write("Ange streckkod:\n> ");
         string barcode = Console.ReadLine() ?? "";
+
         MovieCopy? movieCopy = repo.GetMovieWithBarcode(barcode);
         if (movieCopy == null)
         {
             Console.WriteLine("Ingen film med den streckkoden finns.");
-            return null;
+            return (null, 0);
         }
         if (movieCopy.IsLoaned)
         {
             Console.WriteLine("Film är redan utlånad.");
-            return null;
+            return (null, 0);
         }
-        return movieCopy;
+
+        Console.Write("I hur många dagar vill du hyra filmen?\n> ");
+        //Lägg in kontroll senare för att se till att det är ett giltigt värde på rentalDays
+        int rentalDays = int.Parse(Console.ReadLine());
+        return (movieCopy, rentalDays);
     }
 
 

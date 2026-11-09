@@ -195,6 +195,15 @@ order by Customer.Id desc
         System.Console.WriteLine($"Filmen {movieName}: Har raderats från systemet");
 
     }
-
+    public void CreateNewMovieRental(MovieRental movieRental)
+    {
+        using IDbConnection db = new MySqlConnection(connectionString);
+        string sql = 
+        """
+        INSERT INTO MovieRental(OrderId, MovieCopyId, ReturnDate, ExpectedReturnDate, PricePerDay)
+        VALUES (@RentalId, @MovieCopyId, @ReturnDate, @ExpectedReturnDate, @PricePerDay)
+        """;
+        db.Execute(sql, movieRental);
+    }
 
 }
