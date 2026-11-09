@@ -26,7 +26,6 @@ public class UserInterface
             Console.WriteLine("7. Skicka faktura");
             Console.WriteLine("8. Visa försenade lån"); //max
             Console.WriteLine("9. Avsluta");
-
             Console.Write("Välj: ");
             string val = Console.ReadLine() ?? "";
 
@@ -41,6 +40,7 @@ public class UserInterface
                 case "3":
                     return;
                 case "4":
+                    repo.ShowAllLateMovies(repo.GetLateReturns());
                     return;
                 case "5":
                     return;

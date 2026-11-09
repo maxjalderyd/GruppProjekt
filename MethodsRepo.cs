@@ -77,7 +77,7 @@ public class Repository
     public Rental CreateNewRental(int customerId)
     {
         using IDbConnection db = new MySqlConnection(connectionString);
-        string sql = 
+        string sql =
         """
         INSERT INTO Rental (CustomerId, RentalDate) values
         (@CustomerId, CURRENT_TIMESTAMP);
@@ -86,7 +86,7 @@ public class Repository
         WHERE Id = LAST_INSERT_ID()
         """;
 
-        return db.QuerySingle<Rental>(sql, new {CustomerId = customerId});
+        return db.QuerySingle<Rental>(sql, new { CustomerId = customerId });
     }
 
     public void ShowAllMovies()
