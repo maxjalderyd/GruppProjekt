@@ -154,14 +154,6 @@ order by Customer.Id desc
         return dTOs;
     }
 
-    public void ShowAllLateMovies(List<DTO> DtoList)
-    {
-        foreach (DTO d in DtoList)
-        {
-            System.Console.WriteLine($"Name: {d.Name} Phone: {d.PhoneNumber} Barcode: {d.Barcode}, Movietitle: {d.MovieTitle} Days to late: {d.NumberOfDaysLate} Price: {d.DaysLatePrice}  ");
-        }
-    }
-
     public void DeleteMovie(string movieName)
     {
         // Hämta filmens Id
@@ -198,7 +190,7 @@ order by Customer.Id desc
     public void CreateNewMovieRental(MovieRental movieRental)
     {
         using IDbConnection db = new MySqlConnection(connectionString);
-        string sql = 
+        string sql =
         """
         INSERT INTO MovieRental(OrderId, MovieCopyId, ReturnDate, ExpectedReturnDate, PricePerDay)
         VALUES (@RentalId, @MovieCopyId, @ReturnDate, @ExpectedReturnDate, @PricePerDay);
@@ -213,12 +205,12 @@ order by Customer.Id desc
     public int CreateNewCustomer(string name, DateOnly birthDate, string email, string phoneNumber)
     {
         using IDbConnection db = new MySqlConnection(connectionString);
-        string sql = 
+        string sql =
         """
         INSERT INTO Customer (Name, BirthDate, Email, PhoneNumber)
         VALUES (@name, @birthDate, @email, @phoneNumber)
         """;
-        return db.Execute(sql, new {name, birthDate, email, phoneNumber});
+        return db.Execute(sql, new { name, birthDate, email, phoneNumber });
     }
 
 }

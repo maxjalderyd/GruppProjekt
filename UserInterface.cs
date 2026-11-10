@@ -37,12 +37,10 @@ public class UserInterface
                     RentMovie();
                     break;
                 case "2":
-                    repo.ShowAllMovies();
                     return;
                 case "3":
                     return;
                 case "4":
-                    repo.ShowAllLateMovies(repo.GetLateReturns());
                     return;
                 case "5":
                     CreateNewCustomer();
@@ -55,7 +53,7 @@ public class UserInterface
                 case "7":
                     return;
                 case "8":
-                    repo.ShowAllLateMovies(repo.GetLateReturns());
+                    ShowAllLateMovies(repo.GetLateReturns());
                     return;
                 case "9":
                     System.Console.WriteLine("avslutar");
@@ -183,5 +181,13 @@ public class UserInterface
             Console.WriteLine("Kunde inte lägga till kund.");
 
         Thread.Sleep(3000);
+    }
+
+    public void ShowAllLateMovies(List<DTO> DtoList)
+    {
+        foreach (DTO d in DtoList)
+        {
+            System.Console.WriteLine($"Name: {d.Name} Phone: {d.PhoneNumber} Barcode: {d.Barcode}, Movietitle: {d.MovieTitle} Days to late: {d.NumberOfDaysLate} Price: {d.DaysLatePrice}");
+        }
     }
 }
