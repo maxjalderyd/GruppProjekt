@@ -82,17 +82,16 @@ public class Rental
     }
 
 }
-
 public record MovieReceiptRow(string Barcode, string MovieTitle, int PricePerDay, DateOnly ExpectedReturnDate, int RentalDays)
 { public decimal TotalPrice => PricePerDay * RentalDays; } //räknar ut totalpris per film
 
 public class Receipt
 {
-    public string Customer {get; private set;} //Customer.Name
-    public int OrderNr {get; private set;} //RentalId
-    public List<MovieReceiptRow> ReceiptRows {get; private set;} = new(); //barcode, movieTitle, pricePerDay, expectedReturnDate, rentalDays
+    public string Customer { get; private set; } //Customer.Name
+    public int OrderNr { get; private set; } //RentalId
+    public List<MovieReceiptRow> ReceiptRows { get; private set; } = new(); //barcode, movieTitle, pricePerDay, expectedReturnDate, rentalDays
     public decimal TotalPrice => ReceiptRows.Sum(row => row.TotalPrice); //räknar ut totalpris för hela ordern
-    public Receipt (string customer, int orderNr)
+    public Receipt(string customer, int orderNr)
     {
         Customer = customer;
         OrderNr = orderNr;
@@ -103,6 +102,7 @@ public class Receipt
         ReceiptRows.Add(receiptRow);
     }
 }
+
 
 public class LateRentalsDTO
 {
@@ -125,71 +125,4 @@ public class LateRentalsDTO
         DaysLatePrice = daysLatePrice;
     }
 }
-
-// public class RentalContext // klass som håller information att föra in i discounts klasser.
-// {
-//     public string CustomerName { get; set; } = null!;
-//     public List<MovieRental> items = new();
-//     public decimal TotalCost;
-//     public DateOnly RentalDate;
-// }
-// public interface IDiscounts
-// {
-//     string Name { get; } // Namn På Rabbaten tex "BlackWeek 20"
-//     bool IsApplicable { get; set; } // jämnför så att rabbaten är applicerbar tex 3 för 2. krävs att du har 3 filmer etc
-//     decimal CalculateDiscount(RentalContext context); // räknar ut hur mycket som skall dras av från original priset i kronor
-
-// }
-
-// public class SellersDiscount : IDiscounts
-// {
-//     private readonly decimal _percentage;
-//     string IDiscounts.Name => "SellersDeal";
-//     bool IDiscounts.IsApplicable { get; set; }
-//     decimal IDiscounts.CalculateDiscount(RentalContext context)
-//     {
-//         return _percentage;
-//     }
-// }
-
-/* public class Receipt
-{
-    string receiptFilePath = "Receipt.csv";
-    private int _orderNumber;
-    public int OrderNumber => _orderNumber;
-    readonly string CustomerName;
-    private int _totalPrice;
-    decimal TotalPrice => _totalPrice;
-    readonly List<MovieCopy> movies = new();
-
-
-    public Receipt(Customer customer, List<MovieRental> movieRentals, List<Rental> rentals, List<MovieCopy> copy, Movie movie)
-    {
-
-        _orderNumber = Random.Shared.Next(111111, 999999);
-        CustomerName = customer.Name;
-
-        for (int i = 0; i < rentals.Count; i++)
-    {
-            Rental r = rentals[i];
-            MovieRental m = movieRentals[i];
-
-            int days = (int)(m.ExpectedReturnDate.DayNumber - r.RentalDate.DayNumber);
-
-            _totalPrice += days * m.PricePerDay;
-            // movies.Add(copy[i].Id == [i]);
-        }
-
-    }
-    public override string ToString()
-    {
-        return $"{OrderNumber},{CustomerName},{string.Join(";", movies.ConvertAll(movie => movie.Barcode))},{string.Join(";", movies.ConvertAll(movie => movie.Movie.Title))},{string.Join(";", movies.ConvertAll(movie => movie.Movie.PricePerDay))},{TotalPrice}";
-    }
-    public void SaveReceipt(Receipt receipt)
-    {
-        File.AppendAllText(receiptFilePath, receipt.ToString() + Environment.NewLine);
-    } 
-
-
-}*/
 
