@@ -88,7 +88,7 @@ public class Repository
                     SELECT Movie.Id, Movie.Title, Movie.ReleaseDate, Movie.PricePerDay
                     FROM Movie
                     INNER JOIN MovieCopy on Movie.Id = MovieCopy.MovieId
-                    WHERE MovieCopy.IsLoaned = false AND Movie.IsDeleted = 0
+                    WHERE MovieCopy.IsAvailable = false AND Movie.IsDeleted = 0
                     """;
         IEnumerable<Movie> movies = db.Query<Movie>(sql).ToList();
         foreach (Movie m in movies)
@@ -128,9 +128,9 @@ public class Repository
         return null;
     }
 
-    public List<DTO> GetLateReturns()
+    public List<LateRentalsDTO> GetLateReturns()
     {
-        List<DTO> dTOs = new List<DTO>();
+        List<LateRentalsDTO> dTOs = new List<LateRentalsDTO>();
         using IDbConnection connection = new MySqlConnection(connectionString);
         string GetNotReturned =
 """
@@ -145,23 +145,15 @@ where curdate() > MovieRental.ExpectedReturnDate && ReturnDate is null AND Movie
 group by Customer.Name, Customer.PhoneNumber, Customer.Id, MovieCopy.Barcode, Movie.Title, MovieRental.ExpectedReturnDate
 order by Customer.Id desc      
 """;
-        IEnumerable<DTO> list = connection.Query<DTO>(GetNotReturned).ToList();
-        foreach (DTO d in list)
+        IEnumerable<LateRentalsDTO> list = connection.Query<LateRentalsDTO>(GetNotReturned).ToList();
+        foreach (LateRentalsDTO d in list)
         {
-            dTOs.Add(new DTO(d.Name, d.PhoneNumber, d.Barcode, d.MovieTitle, d.NumberOfDaysLate, d.DaysLatePrice));
+            dTOs.Add(new LateRentalsDTO(d.Name, d.PhoneNumber, d.Barcode, d.MovieTitle, d.NumberOfDaysLate, d.DaysLatePrice));
         }
         return dTOs;
     }
 
-    public void ShowAllLateMovies(List<DTO> DtoList)
-    {
-        foreach (DTO d in DtoList)
-        {
-            System.Console.WriteLine($"Name: {d.Name} Phone: {d.PhoneNumber} Barcode: {d.Barcode}, Movietitle: {d.MovieTitle} Days to late: {d.NumberOfDaysLate} Price: {d.DaysLatePrice}  ");
-        }
-    }
-
-    public void DeleteMovie(string movieName)
+    public string DeleteMovie(string movieName)
     {
         // Hämta filmens Id
         using IDbConnection connection = new MySqlConnection(connectionString);
@@ -169,8 +161,8 @@ order by Customer.Id desc
         int? movieId = connection.QueryFirstOrDefault<int?>(sqlGetMovieId, new { Title = movieName });
         if (movieId == null)
         {
-            System.Console.WriteLine("fanns ingen film med det namnet eller redan markerats som INAKTIV");
-            return;
+            return $"fanns ingen film med det namnet eller redan markerats som INAKTIV";
+
         }
 
         string CheckActiveRentals = @"SELECT EXISTS (
@@ -183,21 +175,20 @@ order by Customer.Id desc
         bool hasActiveRentals = connection.ExecuteScalar<bool>(CheckActiveRentals, new { movieId });
         if (hasActiveRentals == true)
         {
-            System.Console.WriteLine($"kan ej radera {movieName} då det finns aktiva uthyrningar på den");
-            return;
+            return $"kan ej radera {movieName} då det finns aktiva uthyrningar på den";
         }
 
         string softDeleteSql = @"UPDATE Movie
                                 SET IsDeleted = 1
                                 WHERE Movie.Id = @movieId";
         connection.Execute(softDeleteSql, new { movieId });
-        System.Console.WriteLine($"Filmen {movieName}: Har raderats från systemet");
+        return $"Filmen {movieName}: Har raderats från systemet";
 
     }
     public void CreateNewMovieRental(MovieRental movieRental)
     {
         using IDbConnection db = new MySqlConnection(connectionString);
-        string sql = 
+        string sql =
         """
         INSERT INTO MovieRental(OrderId, MovieCopyId, ReturnDate, ExpectedReturnDate, PricePerDay)
         VALUES (@RentalId, @MovieCopyId, @ReturnDate, @ExpectedReturnDate, @PricePerDay);
@@ -208,12 +199,12 @@ order by Customer.Id desc
     public int CreateNewCustomer(string name, DateOnly birthDate, string email, string phoneNumber)
     {
         using IDbConnection db = new MySqlConnection(connectionString);
-        string sql = 
+        string sql =
         """
         INSERT INTO Customer (Name, BirthDate, Email, PhoneNumber)
         VALUES (@name, @birthDate, @email, @phoneNumber)
         """;
-        return db.Execute(sql, new {name, birthDate, email, phoneNumber});
+        return db.Execute(sql, new { name, birthDate, email, phoneNumber });
     }
 
 }

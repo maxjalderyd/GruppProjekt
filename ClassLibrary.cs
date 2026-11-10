@@ -104,7 +104,7 @@ public class Receipt
     }
 }
 
-public class DTO
+public class LateRentalsDTO
 {
     public string Name { get; private set; }
     public string PhoneNumber { get; private set; }
@@ -114,7 +114,7 @@ public class DTO
     public decimal DaysLatePrice { get; private set; }
 
 
-    public DTO(string name, string phoneNumber, string barcode, string movieTitle,
+    public LateRentalsDTO(string name, string phoneNumber, string barcode, string movieTitle,
        int numberOfDaysLate, decimal daysLatePrice)
     {
         Name = name;
