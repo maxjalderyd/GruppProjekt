@@ -48,7 +48,7 @@ public class UserInterface
                 case "6":
                     System.Console.WriteLine("vilken film vill du radera? Namn");
                     repo.ShowAllMovies();
-                    repo.DeleteMovie(Console.ReadLine());
+                    DeleteMovieUi(repo.DeleteMovie(Console.ReadLine()));
                     return;
                 case "7":
                     return;
@@ -189,5 +189,9 @@ public class UserInterface
         {
             System.Console.WriteLine($"Name: {d.Name} Phone: {d.PhoneNumber} Barcode: {d.Barcode}, Movietitle: {d.MovieTitle} Days to late: {d.NumberOfDaysLate} Price: {d.DaysLatePrice}");
         }
+    }
+    public void DeleteMovieUi(string delMovie)
+    {
+        System.Console.WriteLine(delMovie);
     }
 }
