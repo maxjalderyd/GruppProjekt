@@ -69,15 +69,21 @@ public class UserInterface
         if (customer == null)
             return;
 
-        Rental rental = repo.CreateNewRental(customer.Id);
+        Rental? rental = null;
 
-        Receipt receipt = new(customer.Name, rental.Id);
+        Receipt? receipt = null;
 
         while (true)
         {
             (MovieCopy? movieCopy, int rentalDays) = GetMovie();
             if (movieCopy == null)
                 continue;
+
+            if (rental == null)
+                rental = repo.CreateNewRental(customer.Id);
+            
+            if (receipt == null)
+                receipt = new(customer.Name, rental.Id);
 
             //Skapa MovieRental objekt och spara i databasen samt uppdatera IsLoaned = true
             DateOnly dueDate = DateOnly.FromDateTime(DateTime.Today).AddDays(rentalDays);
@@ -107,7 +113,10 @@ public class UserInterface
                 break;
         }
 
-        PrintReceipt(receipt);
+        if (receipt != null)
+            PrintReceipt(receipt);
+        else
+            Console.WriteLine("Inga filmer las till.");
     }
 
 
