@@ -133,15 +133,41 @@ public class DTO
 
 public class Receipt
 {
+    string receiptFilePath = "Receipt.csv";
     private int _orderNumber;
     public int OrderNumber => _orderNumber;
     readonly string CustomerName;
+    private int _totalPrice;
+    decimal TotalPrice => _totalPrice;
     readonly List<MovieCopy> movies = new();
-    decimal TotalPrice { get; set; }
-    public Receipt()
+
+    public Receipt(Customer customer, List<MovieRental> movieRentals, List<Rental> rentals, List<MovieCopy> copy, Movie movie)
     {
+
         _orderNumber = Random.Shared.Next(111111, 999999);
+        CustomerName = customer.Name;
+
+        for (int i = 0; i < rentals.Count; i++)
+        {
+            Rental r = rentals[i];
+            MovieRental m = movieRentals[i];
+
+            int days = (int)(m.ExpectedReturnDate.DayNumber - r.RentalDate.DayNumber);
+
+            _totalPrice += days * m.PricePerDay;
+            // movies.Add(copy[i].Id == [i]);
+        }
 
     }
+    public override string ToString()
+    {
+        return $"{OrderNumber},{CustomerName},{string.Join(";", movies.ConvertAll(movie => movie.Barcode))},{string.Join(";", movies.ConvertAll(movie => movie.Movie.Title))},{string.Join(";", movies.ConvertAll(movie => movie.Movie.PricePerDay))},{TotalPrice}";
+    }
+    public void SaveReceipt(Receipt receipt)
+    {
+        File.AppendAllText(receiptFilePath, receipt.ToString() + Environment.NewLine);
+    }
+
+
 }
 
