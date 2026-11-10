@@ -30,7 +30,6 @@ public class Repository
         db.Execute(sql);
     }
 
-
     public MovieCopy? GetMovieWithBarcode(string barcode)
     {
         using MySqlConnection db = new(connectionString);
@@ -202,10 +201,6 @@ order by Customer.Id desc
         """
         INSERT INTO MovieRental(OrderId, MovieCopyId, ReturnDate, ExpectedReturnDate, PricePerDay)
         VALUES (@RentalId, @MovieCopyId, @ReturnDate, @ExpectedReturnDate, @PricePerDay);
-
-        UPDATE MovieCopy 
-        SET IsLoaned = TRUE
-        WHERE Id = @MovieCopyId
         """;
         db.Execute(sql, movieRental);
     }

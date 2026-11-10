@@ -73,7 +73,7 @@ public class UserInterface
 
         Rental rental = repo.CreateNewRental(customer.Id);
 
-        //Skapa kvitto
+        Receipt receipt = new(customer.Name, rental.Id);
 
         while (true)
         {
@@ -93,7 +93,15 @@ public class UserInterface
             repo.CreateNewMovieRental(movieRental);
             Console.WriteLine($"{movieCopy.Movie.Title} lades till.");
 
-            //Lägg till movieCopy i receipt MovieCopy listan
+            //Lägg till infon i Receipt
+            MovieReceiptRow receiptRow = new(
+                movieCopy.Barcode,
+                movieCopy.Movie.Title,
+                movieRental.PricePerDay,
+                movieRental.ExpectedReturnDate,
+                rentalDays
+            );
+            receipt.AddReceiptRow(receiptRow);
 
             Console.Write("Vill du lägga till fler filmer [Y] eller [N]?\n> ");
             string answer = Console.ReadLine() ?? "";
@@ -101,9 +109,35 @@ public class UserInterface
                 break;
         }
 
-        //Räkna ut totalsumman, skriv ut kvitto.
-
+        PrintReceipt(receipt);
     }
+
+
+    public void PrintReceipt(Receipt receipt)
+    {
+        Console.WriteLine("\n==============================================");
+        Console.WriteLine("              VIDEOTEKET");
+        Console.WriteLine("                 KVITTO");
+        Console.WriteLine("==============================================");
+
+        Console.WriteLine($"Kund: {receipt.Customer}");
+        Console.WriteLine($"Kvittonummer: {receipt.OrderNr}");
+        
+        Console.WriteLine("----------------------------------------------");
+        Console.WriteLine($"{"Film",-20} {"Dagar",5} {"Pris/dag",10} {"Totalt",10}");
+        Console.WriteLine("----------------------------------------------");
+
+        foreach (var row in receipt.ReceiptRows)
+        {
+            Console.WriteLine($"{row.MovieTitle,-20} {row.RentalDays,5} {row.PricePerDay,10:C2} {row.TotalPrice,10:C2}");
+            Console.WriteLine($"  Returneras senast: {row.ExpectedReturnDate:yyyy-MM-dd}");
+        }
+
+        Console.WriteLine("----------------------------------------------");
+        Console.WriteLine($"{"TOTALPRIS:",-36} {receipt.TotalPrice,10:C2}");
+        Console.WriteLine("==============================================");
+    }
+
     public Customer? GetCustomer()
     {
         while (true)

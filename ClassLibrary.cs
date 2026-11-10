@@ -1,4 +1,5 @@
 using System;
+using Mysqlx.Resultset;
 using UtilityLibraries;
 namespace UtilityLibraries;
 
@@ -82,6 +83,26 @@ public class Rental
 
 }
 
+public record MovieReceiptRow(string Barcode, string MovieTitle, int PricePerDay, DateOnly ExpectedReturnDate, int RentalDays)
+{ public decimal TotalPrice => PricePerDay * RentalDays; } //räknar ut totalpris per film
+
+public class Receipt
+{
+    public string Customer {get; private set;} //Customer.Name
+    public int OrderNr {get; private set;} //RentalId
+    public List<MovieReceiptRow> ReceiptRows {get; private set;} = new(); //barcode, movieTitle, pricePerDay, expectedReturnDate, rentalDays
+    public decimal TotalPrice => ReceiptRows.Sum(row => row.TotalPrice); //räknar ut totalpris för hela ordern
+    public Receipt (string customer, int orderNr)
+    {
+        Customer = customer;
+        OrderNr = orderNr;
+    }
+
+    public void AddReceiptRow(MovieReceiptRow receiptRow)
+    {
+        ReceiptRows.Add(receiptRow);
+    }
+}
 
 public class DTO
 {
@@ -131,7 +152,7 @@ public class DTO
 //     }
 // }
 
-public class Receipt
+/* public class Receipt
 {
     string receiptFilePath = "Receipt.csv";
     private int _orderNumber;
@@ -141,6 +162,7 @@ public class Receipt
     decimal TotalPrice => _totalPrice;
     readonly List<MovieCopy> movies = new();
 
+
     public Receipt(Customer customer, List<MovieRental> movieRentals, List<Rental> rentals, List<MovieCopy> copy, Movie movie)
     {
 
@@ -148,7 +170,7 @@ public class Receipt
         CustomerName = customer.Name;
 
         for (int i = 0; i < rentals.Count; i++)
-        {
+    {
             Rental r = rentals[i];
             MovieRental m = movieRentals[i];
 
@@ -166,8 +188,8 @@ public class Receipt
     public void SaveReceipt(Receipt receipt)
     {
         File.AppendAllText(receiptFilePath, receipt.ToString() + Environment.NewLine);
-    }
+    } 
 
 
-}
+}*/
 
