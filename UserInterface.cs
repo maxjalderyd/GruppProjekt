@@ -183,9 +183,9 @@ public class UserInterface
         Thread.Sleep(3000);
     }
 
-    public void ShowAllLateMovies(List<DTO> DtoList)
+    public void ShowAllLateMovies(List<LateRentalsDTO> DtoList)
     {
-        foreach (DTO d in DtoList)
+        foreach (LateRentalsDTO d in DtoList)
         {
             System.Console.WriteLine($"Name: {d.Name} Phone: {d.PhoneNumber} Barcode: {d.Barcode}, Movietitle: {d.MovieTitle} Days to late: {d.NumberOfDaysLate} Price: {d.DaysLatePrice}");
         }

@@ -129,9 +129,9 @@ public class Repository
         return null;
     }
 
-    public List<DTO> GetLateReturns()
+    public List<LateRentalsDTO> GetLateReturns()
     {
-        List<DTO> dTOs = new List<DTO>();
+        List<LateRentalsDTO> dTOs = new List<LateRentalsDTO>();
         using IDbConnection connection = new MySqlConnection(connectionString);
         string GetNotReturned =
 """
@@ -146,10 +146,10 @@ where curdate() > MovieRental.ExpectedReturnDate && ReturnDate is null AND Movie
 group by Customer.Name, Customer.PhoneNumber, Customer.Id, MovieCopy.Barcode, Movie.Title, MovieRental.ExpectedReturnDate
 order by Customer.Id desc      
 """;
-        IEnumerable<DTO> list = connection.Query<DTO>(GetNotReturned).ToList();
-        foreach (DTO d in list)
+        IEnumerable<LateRentalsDTO> list = connection.Query<LateRentalsDTO>(GetNotReturned).ToList();
+        foreach (LateRentalsDTO d in list)
         {
-            dTOs.Add(new DTO(d.Name, d.PhoneNumber, d.Barcode, d.MovieTitle, d.NumberOfDaysLate, d.DaysLatePrice));
+            dTOs.Add(new LateRentalsDTO(d.Name, d.PhoneNumber, d.Barcode, d.MovieTitle, d.NumberOfDaysLate, d.DaysLatePrice));
         }
         return dTOs;
     }
