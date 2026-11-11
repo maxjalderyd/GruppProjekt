@@ -1,4 +1,5 @@
 using System;
+using Google.Protobuf.WellKnownTypes;
 using Mysqlx.Resultset;
 using UtilityLibraries;
 namespace UtilityLibraries;
@@ -91,6 +92,20 @@ public class Receipt
     public int OrderNr { get; private set; } //RentalId
     public List<MovieReceiptRow> ReceiptRows { get; private set; } = new(); //barcode, movieTitle, pricePerDay, expectedReturnDate, rentalDays
     public decimal TotalPrice => ReceiptRows.Sum(row => row.TotalPrice); //räknar ut totalpris för hela ordern
+
+    private decimal PriceAfterDiscount => TotalPrice - DiscountPercentage * TotalPrice;
+    private decimal _discountPercentage;
+    public decimal DiscountPercentage
+    {
+        get
+        {
+            return _discountPercentage;
+        }
+        set
+        {
+            _discountPercentage = value;
+        }
+    }
     public Receipt(string customer, int orderNr)
     {
         Customer = customer;
