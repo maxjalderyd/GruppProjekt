@@ -206,4 +206,9 @@ order by Customer.Id desc
         return db.Execute(sql, new { name, birthDate, email, phoneNumber });
     }
 
+    public void GetDiscountOnReceipt(Receipt receipt)
+    {
+        AdjustablePercent discount = new AdjustablePercent("AdjustablePercent");
+        receipt.DiscountPercentage = discount.ChooseDiscount();
+    }
 }
