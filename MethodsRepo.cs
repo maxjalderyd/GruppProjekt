@@ -1,11 +1,7 @@
-using System;
 using MySql.Data.MySqlClient;
 using Dapper;
 using System.Data;
 using UtilityLibraries;
-using System.Net.Mime;
-using System.Configuration;
-
 
 
 public class Repository
