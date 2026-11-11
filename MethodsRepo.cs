@@ -3,20 +3,23 @@ using MySql.Data.MySqlClient;
 using Dapper;
 using System.Data;
 using UtilityLibraries;
+using System.Net.Mime;
+using System.Configuration;
 
 
 
 public class Repository
 {
-    string connectionString =
-    """
-    Server=comet-direct.usbx.me;
-            Port=17815;
-            Database=yh_max_Videoteket;
-            User=yh_max;
-            Password=C7AKQfWB#sha7n;
-    """;
+    static string preConnectionString = File.ReadAllText("tokens.txt");
+    static string[] connectionItems = preConnectionString.Split(';');
 
+    static string connectionString = $"""
+        Server={connectionItems[0]};
+        Port={connectionItems[1]};
+        Database={connectionItems[2]};
+        User={connectionItems[3]};
+        Password={connectionItems[4]};
+    """;
     public void CheckDateAndPrice()
     {
         using IDbConnection db = new MySqlConnection(connectionString);
