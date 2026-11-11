@@ -206,4 +206,14 @@ order by Customer.Id desc
         return db.Execute(sql, new { name, birthDate, email, phoneNumber });
     }
 
+    public int AddNewMovie(string title, DateTime releaseDate, decimal pricePerDay)
+    {
+        using IDbConnection db = new MySqlConnection(connectionString);
+        string sql = """
+            INSERT INTO Movie (Title, ReleaseDate, PricePerDay)
+            VALUES (@title, @releaseDate, @pricePerDay)
+        """;
+        return db.Execute(sql, new { title, releaseDate, pricePerDay });
+    }
+
 }
