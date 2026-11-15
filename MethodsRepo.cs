@@ -37,7 +37,7 @@ public class Repository
         using MySqlCommand command = new(
         """
         SELECT 
-            m.Id as MovieId, m.Title, m.ReleaseDate, m.PricePerDay, mc.Id, mc.Barcode, mc.IsLoaned
+            m.Id as MovieId, m.Title, m.ReleaseDate, m.PricePerDay, mc.Id, mc.Barcode, mc.IsAvailable
         FROM Movie m 
         JOIN MovieCopy mc on m.Id = mc.MovieId
         WHERE mc.Barcode = @barcode
@@ -58,7 +58,7 @@ public class Repository
         MovieCopy movieCopy = new(
             reader.GetInt32("Id"),
             barcode,
-            reader.GetBoolean("IsLoaned"),
+            reader.GetBoolean("IsAvailable"),
             movie
         );
 

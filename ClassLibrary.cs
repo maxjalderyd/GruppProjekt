@@ -23,13 +23,13 @@ public class MovieCopy
 {
     public int Id { get; set; }
     public string Barcode { get; set; }
-    public bool IsLoaned { get; set; }
+    public bool IsAvailable { get; set; }
     public Movie Movie { get; set; }
-    public MovieCopy(int id, string barcode, bool isLoaned, Movie movie)
+    public MovieCopy(int id, string barcode, bool isAvailable, Movie movie)
     {
         Id = id;
         Barcode = barcode;
-        IsLoaned = isLoaned;
+        IsAvailable = isAvailable;
         Movie = movie;
     }
 }

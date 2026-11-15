@@ -181,14 +181,25 @@ public class UserInterface
         string barcode = Console.ReadLine() ?? "";
 
         MovieCopy? movieCopy = repo.GetMovieWithBarcode(barcode);
+
+        //Kontrollerar om streckkoden är giltig
         if (movieCopy == null)
         {
             Console.WriteLine("Ingen film med den streckkoden finns.");
             return (null, 0);
         }
-        if (movieCopy.IsLoaned)
+
+        //Kontrollerar om filmen har skickats tillbaka till utgivaren
+        if (!movieCopy.IsAvailable)
         {
-            Console.WriteLine("Film är redan utlånad.");
+            Console.WriteLine("Filmen är inte längre tillgänglig.");
+            return (null, 0);
+        }
+
+        //Kontrollerar om filmen redan är utlånad
+        if (repo.IsMovieRented(movieCopy))
+        {
+            Console.WriteLine("Filmen är redan utlånad.");
             return (null, 0);
         }
 
