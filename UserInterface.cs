@@ -203,10 +203,18 @@ public class UserInterface
             return (null, 0);
         }
 
-        Console.Write("I hur många dagar vill du hyra filmen?\n> ");
+        while (true)
+        {
+            Console.Write("I hur många dagar vill du hyra filmen? (1-30 dagar)\n> ");
+            string strRentalDays = Console.ReadLine() ?? "";
 
-        int rentalDays = int.Parse(Console.ReadLine()!);
-        return (movieCopy, rentalDays);
+            if (!int.TryParse(strRentalDays, out int rentalDays))
+                Console.WriteLine("Felaktig inmatning. Ange endast heltal.");
+            else if (rentalDays < 1 || rentalDays > 30)
+                Console.WriteLine("Du kan endast hyra film i 1-30 dagar.");
+            else
+                return (movieCopy, rentalDays);
+        }
     }
     public void CreateNewCustomer()
     {
