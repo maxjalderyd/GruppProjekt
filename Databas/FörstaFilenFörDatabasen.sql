@@ -48,19 +48,25 @@ FOREIGN KEY (OrderId) REFERENCES Rental(Id),
 FOREIGN KEY (MovieCopyId) REFERENCES MovieCopy(Id)
 );
 -- 1. Lägg till filmer (Movie)
-INSERT INTO Movie (Title, ReleaseDate, PricePerDay) VALUES
-('Inception', '2010-07-16', 39),
-('The Matrix', '1999-03-31', 29),
-('Interstellar', '2014-11-07', 49),
-('Oppenheimer', '2023-07-21', 59);
+INSERT INTO Movie (Title, ReleaseDate, PricePerDay, IsDeleted) VALUES
+('Inception', '2010-07-16', 39, 0),
+('The Matrix', '1999-03-31', 29, 0),
+('Interstellar', '2014-11-07', 49, 0),
+('Oppenheimer', '2023-07-21', 59, 0),
+('The Dark Knight', '2008-07-18', 49, 0),
+('The Shawshank Redemption', '1994-09-23', 29, 0);
 
 -- 2. Lägg till fysiska filmkopior (MovieCopy)
-INSERT INTO MovieCopy (MovieId, IsLoaned, Barcode) VALUES
+INSERT INTO MovieCopy (MovieId, IsAvailable, Barcode) VALUES
 (1, TRUE,  'BC-INCEPTION-001'),
 (1, FALSE, 'BC-INCEPTION-002'),
 (2, FALSE, 'BC-MATRIX-001'),
 (3, TRUE,  'BC-INTERSTELLAR-001'),
-(4, FALSE, 'BC-OPPENHEIMER-001');
+(4, FALSE, 'BC-OPPENHEIMER-001'),
+(5, 1, 'BC-DARKKNIGHT-001'),
+(5, 1, 'BC-DARKKNIGHT-002'),
+(6, 1, 'BC-SHAWSHANK-001'),
+(6, 1, 'BC-SHAWSHANK-002');
 
 -- 3. Lägg till kunder (Customer)
 INSERT INTO Customer (Name, BirthDate, Email, PhoneNumber) VALUES
