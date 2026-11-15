@@ -65,6 +65,21 @@ public class Repository
         return movieCopy;
     }
 
+    public bool IsMovieRented(MovieCopy movieCopy)
+    {
+        using IDbConnection db = new MySqlConnection(connectionString);
+        string sql = 
+        """
+        SELECT EXISTS (
+            SELECT 1 FROM MovieRental mr
+            JOIN MovieCopy mc ON mr.MovieCopyId = mc.Id
+            WHERE mc.Barcode = @Barcode
+            AND mr.ReturnDate IS NULL
+        )
+        """;
+        return db.ExecuteScalar<bool>(sql, new {Barcode = movieCopy.Barcode});
+    }
+
     public Rental CreateNewRental(int customerId)
     {
         using IDbConnection db = new MySqlConnection(connectionString);
