@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Dapper;
 using MySql.Data.MySqlClient;
 using MySqlX.XDevAPI.CRUD;
@@ -116,7 +117,9 @@ public class UserInterface
         if (receipt != null)
             PrintReceipt(receipt);
         else
-            Console.WriteLine("Inga filmer las till.");
+            Console.WriteLine("Inga filmer las till. Återgår till huvudmenyn...");
+        
+        Thread.Sleep(3000);
     }
 
 
@@ -179,6 +182,7 @@ public class UserInterface
     {
         Console.Write("Ange streckkod:\n> ");
         string barcode = Console.ReadLine() ?? "";
+        //LÄGG TILL: Kontrollera barcode formatet innan databasanrop
 
         MovieCopy? movieCopy = repo.GetMovieWithBarcode(barcode);
 
@@ -211,26 +215,26 @@ public class UserInterface
             if (!int.TryParse(strRentalDays, out int rentalDays))
                 Console.WriteLine("Felaktig inmatning. Ange endast heltal.");
             else if (rentalDays < 1 || rentalDays > 30)
-                Console.WriteLine("Du kan endast hyra film i 1-30 dagar.");
+                Console.WriteLine("Du kan endast hyra en film i 1-30 dagar.");
             else
                 return (movieCopy, rentalDays);
         }
     }
     public void CreateNewCustomer()
     {
-        Console.Write("Namn: ");
+        Console.Write("Namn:\n> ");
         string name = Console.ReadLine() ?? "";
 
-        Console.Write("Födelsedatum (YYYY-MM-DD): ");
+        Console.Write("Födelsedatum (YYYY-MM-DD):\n> ");
         string strBirthDate = Console.ReadLine() ?? "";
         DateOnly birthDate;
         while (!DateOnly.TryParse(strBirthDate, out birthDate))
         {
-            Console.Write("Ogiltigt datum. YYYY-MM-DD: ");
+            Console.Write("Ogiltigt datum. Ange i detta format YYYY-MM-DD:\n> ");
             strBirthDate = Console.ReadLine() ?? "";
         }
 
-        Console.Write("Email: ");
+        Console.Write("Email:\n> ");
         string email = Console.ReadLine() ?? "";
 
         Console.Write("Telefonnummer: ");
