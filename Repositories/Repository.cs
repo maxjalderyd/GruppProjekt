@@ -265,4 +265,17 @@ order by Customer.Id desc
         AdjustablePercent discount = new AdjustablePercent("AdjustablePercent");
         receipt.DiscountPercentage = discount.ChooseDiscount();
     }
+
+    public int ReturnMovie(MovieCopy movie)
+    {
+        using IDbConnection db = new MySqlConnection(connectionString);
+
+        return db.Execute(
+            """
+            UPDATE MovieRental
+            SET ReturnDate = CURRENT_DATE()
+            WHERE MovieCopyId = @MovieCopyId AND ReturnDate IS NULL
+            """,
+            new { MovieCopyId = movie.Id });
+    }
 }
