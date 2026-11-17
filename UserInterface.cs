@@ -125,6 +125,7 @@ public class UserInterface
             return;
 
         int rentalId;
+        //Försöker skapa Rental och MovieRentals i databasen
         try
         {
             rentalId = repo.CreateRentalWithMovies(customer.Id, movies);
@@ -136,6 +137,7 @@ public class UserInterface
             return;
         }
 
+        //Skapar och printar kvitto
         Receipt receipt = new(customer.Name, rentalId);
         foreach (var row in receiptRows)
         {
@@ -144,7 +146,6 @@ public class UserInterface
         PrintReceipt(receipt);
         Thread.Sleep(3000);
     }
-
     public bool ConfirmOrder(List<MovieReceiptRow> receiptRows)
     {
         int totalPrice = 0;
@@ -191,32 +192,32 @@ public class UserInterface
         Console.WriteLine($"{"TOTALPRIS:",-36} {receipt.TotalPrice,10:C2}");
         Console.WriteLine("==============================================");
     }
-
     public Customer? GetCustomer()
     {
         while (true)
         {
             Console.WriteLine("Tryck [Q] för att avsluta.");
-            Console.WriteLine("vad heter du?");
+            Console.Write("Namn:\n> ");
+
             string name = Console.ReadLine() ?? "";
 
             if (name.Equals("Q", StringComparison.OrdinalIgnoreCase))
                 return null;
 
-            Console.WriteLine("Vad är ditt person nummer?");
+            Console.Write("Personnummer [YYYY-MM-DD]:\n> ");
             string birthdateString = Console.ReadLine() ?? "";
             DateOnly birthDate = DateOnly.Parse(birthdateString);
 
-            Console.WriteLine("vad är din mail?");
+            Console.Write("Email:\n> ");
             string mail = Console.ReadLine() ?? "";
 
-            Console.WriteLine("vad är ditt telefon nummer?");
+            Console.Write("Telefonnummer:\n> ");
             string phone = Console.ReadLine() ?? "";
 
             Customer? customer = repo.GetCustomer(name, birthDate, mail, phone);
             if (customer == null)
             {
-                Console.WriteLine("Det finns ingen kund som matchar.");
+                Console.WriteLine("Det finns ingen kund som matchar. Kontrollera info eller registrera ny kund.");
                 continue;
             }
             return customer;
@@ -226,7 +227,6 @@ public class UserInterface
     {
         Console.Write("Ange streckkod:\n> ");
         string barcode = Console.ReadLine() ?? "";
-        //LÄGG TILL: Kontrollera barcode formatet innan databasanrop
 
         MovieCopy? movieCopy = repo.GetMovieWithBarcode(barcode);
 
@@ -274,14 +274,14 @@ public class UserInterface
         DateOnly birthDate;
         while (!DateOnly.TryParse(strBirthDate, out birthDate))
         {
-            Console.Write("Ogiltigt datum. Ange i detta format YYYY-MM-DD:\n> ");
+            Console.Write("Ogiltigt datum. Format måste vara [YYYY-MM-DD]:\n> ");
             strBirthDate = Console.ReadLine() ?? "";
         }
 
         Console.Write("Email:\n> ");
         string email = Console.ReadLine() ?? "";
 
-        Console.Write("Telefonnummer: ");
+        Console.Write("Telefonnummer:\n> ");
         string phoneNumber = Console.ReadLine() ?? "";
 
         int rowsAffected = repo.CreateNewCustomer(name, birthDate, email, phoneNumber);
