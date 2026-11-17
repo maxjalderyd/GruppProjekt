@@ -224,10 +224,10 @@ order by Customer.Id desc
 
     public void ReturnMovie(MovieCopy movie)
     {
-        using MySqlConnection db = new(connectionString);
+        using IDbConnection db = new MySqlConnection(connectionString);
         db.Open();
 
-        using MySqlTransaction transaction = db.BeginTransaction();
+        using IDbTransaction transaction = db.BeginTransaction();
 
         int updatedRentals = db.Execute(
             """
