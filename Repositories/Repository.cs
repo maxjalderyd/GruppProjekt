@@ -78,19 +78,60 @@ public class Repository
         return db.ExecuteScalar<bool>(sql, new {Barcode = movieCopy.Barcode});
     }
 
-    public Rental CreateNewRental(int customerId)
+    public int CreateRentalWithMovies(int customerId, List<MovieRental> movies)
     {
         using IDbConnection db = new MySqlConnection(connectionString);
-        string sql =
-        """
-        INSERT INTO Rental (CustomerId, RentalDate) values
-        (@CustomerId, CURRENT_TIMESTAMP);
+        db.Open();
 
-        SELECT * FROM Rental
-        WHERE Id = LAST_INSERT_ID()
-        """;
+        using (var tran = db.BeginTransaction())
+        {
+            try
+            {
+                //Skapa ny Rental rad och returnera Id
+                string sql =
+                """
+                INSERT INTO Rental (CustomerId, RentalDate) values
+                (@CustomerId, CURRENT_TIMESTAMP);
 
-        return db.QuerySingle<Rental>(sql, new { CustomerId = customerId });
+                SELECT LAST_INSERT_ID();
+                """;
+                int rentalId = db.QuerySingle<int>(
+                    sql, 
+                    new {CustomerId = customerId},
+                    transaction : tran
+                );
+
+                //Skapa MovieRental rader
+                sql =
+                """
+                INSERT INTO MovieRental(OrderId, MovieCopyId, ReturnDate, ExpectedReturnDate, PricePerDay)
+                VALUES (@OrderId, @MovieCopyId, @ReturnDate, @ExpectedReturnDate, @PricePerDay);
+                """;
+                foreach (var movie in movies)
+                {
+                    db.Execute(
+                        sql,
+                        new
+                        {
+                            OrderId = rentalId,
+                            movie.MovieCopyId,
+                            movie.ReturnDate,
+                            movie.ExpectedReturnDate,
+                            movie.PricePerDay
+                        },
+                        transaction : tran
+                    );
+                }
+
+                tran.Commit();
+                return rentalId; //Returnerar om transaktion lyckas
+            }
+            catch
+            {
+                tran.Rollback();
+                throw;
+            }
+        }
     }
 
     public void ShowAllMovies()
@@ -196,16 +237,6 @@ order by Customer.Id desc
         connection.Execute(softDeleteSql, new { movieId });
         return $"Filmen {movieName}: Har raderats från systemet";
 
-    }
-    public void CreateNewMovieRental(MovieRental movieRental)
-    {
-        using IDbConnection db = new MySqlConnection(connectionString);
-        string sql =
-        """
-        INSERT INTO MovieRental(OrderId, MovieCopyId, ReturnDate, ExpectedReturnDate, PricePerDay)
-        VALUES (@RentalId, @MovieCopyId, @ReturnDate, @ExpectedReturnDate, @PricePerDay);
-        """;
-        db.Execute(sql, movieRental);
     }
 
     public int CreateNewCustomer(string name, DateOnly birthDate, string email, string phoneNumber)

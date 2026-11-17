@@ -69,35 +69,37 @@ public class UserInterface
         if (customer == null)
             return;
 
-        Rental? rental = null;
-
-        Receipt? receipt = null;
+        List<MovieRental> movies = new();
+        List<MovieReceiptRow> receiptRows = new();
 
         while (true)
         {
+            //LÄGG TILL: Möjlighet att avbryta när som helst
             (MovieCopy? movieCopy, int rentalDays) = GetMovie();
             if (movieCopy == null)
                 continue;
 
-            if (rental == null)
-                rental = repo.CreateNewRental(customer.Id);
-            
-            if (receipt == null)
-                receipt = new(customer.Name, rental.Id);
-
             //Skapa MovieRental objekt och spara i databasen samt uppdatera IsLoaned = true
             DateOnly dueDate = DateOnly.FromDateTime(DateTime.Today).AddDays(rentalDays);
             MovieRental movieRental = new(
-                rental.Id,
+                null,
                 movieCopy.Id,
                 null,
                 dueDate,
                 movieCopy.Movie.PricePerDay
             );
-            repo.CreateNewMovieRental(movieRental);
+
+            //Kontrollerar att filmen inte redan finns i listan
+            if (movies.Any(movie => movie.MovieCopyId == movieRental.MovieCopyId))
+            {
+                Console.WriteLine("Film är redan tillagd.");
+                continue;
+            }
+
+            movies.Add(movieRental);
             Console.WriteLine($"{movieCopy.Movie.Title} lades till.");
 
-            //Lägg till infon i Receipt
+            //Spara kvittorad info
             MovieReceiptRow receiptRow = new(
                 movieCopy.Barcode,
                 movieCopy.Movie.Title,
@@ -105,7 +107,7 @@ public class UserInterface
                 movieRental.ExpectedReturnDate,
                 rentalDays
             );
-            receipt.AddReceiptRow(receiptRow);
+            receiptRows.Add(receiptRow);
 
             Console.Write("Vill du lägga till fler filmer [Y] eller [N]?\n> ");
             string answer = Console.ReadLine() ?? "";
@@ -113,14 +115,35 @@ public class UserInterface
                 break;
         }
 
-        if (receipt != null)
-            PrintReceipt(receipt);
-        else
+        if (movies.Count == 0)
+        {
             Console.WriteLine("Inga filmer las till. Återgår till huvudmenyn...");
+            Thread.Sleep(3000);
+            return;
+        }
         
+        //LÄGG TILL: Skriv ut order sammanfattning för bekräftning innan Rental skapas
+
+        int rentalId;
+        try
+        {
+            rentalId = repo.CreateRentalWithMovies(customer.Id, movies);
+        }
+        catch
+        {
+            Console.WriteLine("Beställningen kunde inte genomföras.. ");
+            Thread.Sleep(3000);
+            return;
+        }
+
+        Receipt receipt = new(customer.Name, rentalId);
+        foreach (var row in receiptRows)
+        {
+            receipt.AddReceiptRow(row);
+        }
+        PrintReceipt(receipt);
         Thread.Sleep(3000);
     }
-
 
     public void PrintReceipt(Receipt receipt)
     {
