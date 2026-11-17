@@ -4,7 +4,6 @@ using MySql.Data.MySqlClient;
 using MySqlX.XDevAPI.CRUD;
 
 namespace GruppProjekt;
-
 public class UserInterface
 {
     private readonly Repository repo;
@@ -39,32 +38,9 @@ public class UserInterface
                 case "2":
                     return;
                 case "3":
-                    string name;
-                    DateTime dateString;
-                    decimal pricePerDay = 0.0m;
-                    while (true)
-                    {
-                        System.Console.Write("Namn på film att lägga till?: ");
-                        name = Console.ReadLine();
-                        System.Console.Write("Releasedatum: ");
-                        string dateInput = Console.ReadLine();
-                        if (Regex.IsMatch(dateInput, @"^\d{4}-\d{2}-\d{2}$"))
-                        {
-                            dateString = DateTime.Parse(Console.ReadLine());
-                            break;
-                        }
-                        else
-                        {
-                            System.Console.WriteLine("Wrong format");
-                        }
-                        System.Console.Write("Pris per dag: ");
-                        pricePerDay = decimal.Parse(Console.ReadLine());
-                    }
-                    repo.AddNewMovie(name, dateString, pricePerDay);
-                    break;
+                    return;
                 case "4":
-                    
-                    break;
+                    return;
                 case "5":
                     CreateNewCustomer();
                     break;
@@ -102,7 +78,7 @@ public class UserInterface
             if (movieCopy == null)
                 continue;
 
-            //Skapa MovieRental objekt och spara i databasen samt uppdatera IsLoaned = true
+            //Skapa MovieRental objekt
             DateOnly dueDate = DateOnly.FromDateTime(DateTime.Today).AddDays(rentalDays);
             MovieRental movieRental = new(
                 null,
@@ -122,7 +98,7 @@ public class UserInterface
             movies.Add(movieRental);
             Console.WriteLine($"{movieCopy.Movie.Title} lades till.");
 
-            //Spara kvittorad info
+            //Sparar kvittorad info
             MovieReceiptRow receiptRow = new(
                 movieCopy.Barcode,
                 movieCopy.Movie.Title,
@@ -145,7 +121,8 @@ public class UserInterface
             return;
         }
         
-        //LÄGG TILL: Skriv ut order sammanfattning för bekräftning innan Rental skapas
+        if (!ConfirmOrder(receiptRows))
+            return;
 
         int rentalId;
         try
@@ -199,7 +176,7 @@ public class UserInterface
 
         Console.WriteLine($"Kund: {receipt.Customer}");
         Console.WriteLine($"Kvittonummer: {receipt.OrderNr}");
-
+        
         Console.WriteLine("----------------------------------------------");
         Console.WriteLine($"{"Film",-20} {"Dagar",5} {"Pris/dag",10} {"Totalt",10}");
         Console.WriteLine("----------------------------------------------");
