@@ -65,7 +65,7 @@ public class Repository
     public bool IsMovieRented(MovieCopy movieCopy)
     {
         using IDbConnection db = new MySqlConnection(connectionString);
-        string sql = 
+        string sql =
         """
         SELECT EXISTS (
             SELECT 1 FROM MovieRental mr
@@ -74,7 +74,7 @@ public class Repository
             AND mr.ReturnDate IS NULL
         )
         """;
-        return db.ExecuteScalar<bool>(sql, new {Barcode = movieCopy.Barcode});
+        return db.ExecuteScalar<bool>(sql, new { Barcode = movieCopy.Barcode });
     }
     public int CreateRentalWithMovies(int customerId, List<MovieRental> movies)
     {
@@ -94,9 +94,9 @@ public class Repository
                 SELECT LAST_INSERT_ID();
                 """;
                 int rentalId = db.QuerySingle<int>(
-                    sql, 
-                    new {CustomerId = customerId},
-                    transaction : tran
+                    sql,
+                    new { CustomerId = customerId },
+                    transaction: tran
                 );
 
                 //Skapa MovieRental rader
@@ -117,7 +117,7 @@ public class Repository
                             movie.ExpectedReturnDate,
                             movie.PricePerDay
                         },
-                        transaction : tran
+                        transaction: tran
                     );
                 }
 
@@ -264,10 +264,10 @@ order by Customer.Id desc
         receipt.DiscountPercentage = discount.ChooseDiscount();
     }
 
-    public void ReturnMovie(MovieRental movieRental)
+    public LateInvoice? ReturnMovie(MovieRental movieRental)
     {
         using IDbConnection db = new MySqlConnection(connectionString);
-
+        db.Open();
         using IDbTransaction transaction = db.BeginTransaction();
 
         int updatedRentals = db.Execute(
@@ -280,5 +280,19 @@ order by Customer.Id desc
             transaction);
 
         transaction.Commit();
+        return GetRental(movieRental.MovieCopyId);
+    }
+    public LateInvoice? GetRental(int movieCopyId)
+    {
+        using IDbConnection db = new MySqlConnection(connectionString);
+        string GetRentalSql = """
+            SELECT InvoiceLogIfLate.Id, InvoiceLogIfLate.CustomerName, InvoiceLogIfLate.TotalCost, 
+            InvoiceLogIfLate.CreatedDate, InvoiceToMovie.MovieRentCopyId
+            FROM InvoiceLogIfLate
+            JOIN InvoiceToMovie on InvoiceToMovie.InvoiceId = InvoiceLogIfLate.Id
+            WHERE InvoiceToMovie.MovieRentCopyId = @moviecopyId AND InvoiceLogIfLate.CreatedDate = CURRENT_DATE()
+            ORDER BY InvoiceLogIfLate.Id DESC LIMIT 1;
+        """;
+        return db.QueryFirstOrDefault<LateInvoice>(GetRentalSql, new { @moviecopyId = movieCopyId });
     }
 }
