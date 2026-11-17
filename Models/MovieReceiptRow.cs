@@ -1,0 +1,2 @@
+public record MovieReceiptRow(string Barcode, string MovieTitle, int PricePerDay, DateOnly ExpectedReturnDate, int RentalDays)
+{ public decimal TotalPrice => PricePerDay * RentalDays; } //räknar ut totalpris per film

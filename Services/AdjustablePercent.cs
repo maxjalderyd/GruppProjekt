@@ -1,9 +1,3 @@
-public interface IDiscounts
-{
-    string Name { get; set; } // Namn På Rabbaten tex "BlackWeek 20"
-    bool IsApplicable { get; set; } // jämnför så att rabbaten är applicerbar tex 3 för 2. krävs att du har 3 filmer etc
-    decimal CalculateTotalPrice(decimal subtotal); // räknar ut hur mycket kunden skall betala
-}
 public class AdjustablePercent : IDiscounts
 {
     public string Name { get; set; }
@@ -24,10 +18,7 @@ public class AdjustablePercent : IDiscounts
             _discountRate = value;
         }
     }
-
-
     public bool IsApplicable { get; set; } = true;
-
     public AdjustablePercent(string name)
     {
         Name = name;
@@ -37,7 +28,6 @@ public class AdjustablePercent : IDiscounts
         decimal Discount = subtotal * DiscountRate;
         return subtotal - Discount;
     }
-
     public decimal ChooseDiscount()
     {
         System.Console.WriteLine("hur många procent rabbat vill du ge?");
@@ -50,5 +40,4 @@ public class AdjustablePercent : IDiscounts
         }
         else System.Console.WriteLine($"felaktig inmatning"); return 0;
     }
-
 }
