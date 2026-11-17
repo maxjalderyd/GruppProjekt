@@ -235,21 +235,16 @@ order by Customer.Id desc
         receipt.DiscountPercentage = discount.ChooseDiscount();
     }
 
-    public void ReturnMovie(MovieCopy movie)
+    public int ReturnMovie(MovieCopy movie)
     {
         using IDbConnection db = new MySqlConnection(connectionString);
 
-        using IDbTransaction transaction = db.BeginTransaction();
-
-        int updatedRentals = db.Execute(
+        return db.Execute(
             """
             UPDATE MovieRental
             SET ReturnDate = CURRENT_DATE()
             WHERE MovieCopyId = @MovieCopyId AND ReturnDate IS NULL
             """,
-            new { MovieCopyId = movie.Id },
-            transaction);
-
-        transaction.Commit();
+            new { MovieCopyId = movie.Id });
     }
 }
