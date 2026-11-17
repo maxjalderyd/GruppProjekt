@@ -19,11 +19,11 @@ public class UserInterface
         while (true)
         {
             Console.WriteLine("Hej vad vill du göra?");
-            Console.WriteLine("1. Hyra film"); //vanja
+            Console.WriteLine("1. Hyra film"); //vanja - färdig (lägg till validering)
             Console.WriteLine("2. Visa alla filmer");
             Console.WriteLine("3. Lägg in ny film"); // peter
             Console.WriteLine("4. Lämna tillbaka film");
-            Console.WriteLine("5. Lägg till ny kund"); //vanja
+            Console.WriteLine("5. Lägg till ny kund"); //vanja - färdig (lägg till validering)
             Console.WriteLine("6. Ta bort film ur katalog");
             Console.WriteLine("7. Skicka faktura");
             Console.WriteLine("8. Visa försenade lån"); //max
@@ -79,7 +79,7 @@ public class UserInterface
             if (movieCopy == null)
                 continue;
 
-            //Skapa MovieRental objekt och spara i databasen samt uppdatera IsLoaned = true
+            //Skapa MovieRental objekt
             DateOnly dueDate = DateOnly.FromDateTime(DateTime.Today).AddDays(rentalDays);
             MovieRental movieRental = new(
                 null,
@@ -122,7 +122,8 @@ public class UserInterface
             return;
         }
         
-        //LÄGG TILL: Skriv ut order sammanfattning för bekräftning innan Rental skapas
+        if (!ConfirmOrder(receiptRows))
+            return;
 
         int rentalId;
         try
@@ -145,6 +146,28 @@ public class UserInterface
         Thread.Sleep(3000);
     }
 
+    public bool ConfirmOrder(List<MovieReceiptRow> receiptRows)
+    {
+        int totalPrice = 0;
+        Console.WriteLine("====== SAMMANFATTNING ======");
+        foreach (var row in receiptRows)
+        {
+            Console.WriteLine($"{row.MovieTitle} - {row.PricePerDay:C2} x {row.RentalDays} dagar");
+            Console.WriteLine($"\tDue date: {row.ExpectedReturnDate}");
+            Console.WriteLine("-------------------------------");
+            totalPrice += row.PricePerDay * row.RentalDays;
+        }
+        Console.WriteLine($"Totalt: {totalPrice:C2}");
+
+        Console.Write("Bekräfta och betala med [Y] ([N] för att avbryta):\n> ");
+        string choice = Console.ReadLine() ?? "";
+        if (choice.Equals("Y", StringComparison.OrdinalIgnoreCase))
+            return true;
+        
+        Console.WriteLine("Order avbryts... ");
+        Thread.Sleep(3000);
+        return false;
+    }
     public void PrintReceipt(Receipt receipt)
     {
         Console.WriteLine("\n==============================================");

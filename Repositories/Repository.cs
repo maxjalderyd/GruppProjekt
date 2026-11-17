@@ -62,7 +62,6 @@ public class Repository
 
         return movieCopy;
     }
-
     public bool IsMovieRented(MovieCopy movieCopy)
     {
         using IDbConnection db = new MySqlConnection(connectionString);
@@ -77,7 +76,6 @@ public class Repository
         """;
         return db.ExecuteScalar<bool>(sql, new {Barcode = movieCopy.Barcode});
     }
-
     public int CreateRentalWithMovies(int customerId, List<MovieRental> movies)
     {
         using IDbConnection db = new MySqlConnection(connectionString);
