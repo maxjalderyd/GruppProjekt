@@ -39,9 +39,32 @@ public class UserInterface
                 case "2":
                     return;
                 case "3":
-                    return;
+                    string name;
+                    DateTime dateString;
+                    decimal pricePerDay = 0.0m;
+                    while (true)
+                    {
+                        System.Console.Write("Namn på film att lägga till?: ");
+                        name = Console.ReadLine();
+                        System.Console.Write("Releasedatum: ");
+                        string dateInput = Console.ReadLine();
+                        if (Regex.IsMatch(dateInput, @"^\d{4}-\d{2}-\d{2}$"))
+                        {
+                            dateString = DateTime.Parse(Console.ReadLine());
+                            break;
+                        }
+                        else
+                        {
+                            System.Console.WriteLine("Wrong format");
+                        }
+                        System.Console.Write("Pris per dag: ");
+                        pricePerDay = decimal.Parse(Console.ReadLine());
+                    }
+                    repo.AddNewMovie(name, dateString, pricePerDay);
+                    break;
                 case "4":
-                    return;
+                    
+                    break;
                 case "5":
                     CreateNewCustomer();
                     break;
@@ -79,7 +102,7 @@ public class UserInterface
             if (movieCopy == null)
                 continue;
 
-            //Skapa MovieRental objekt
+            //Skapa MovieRental objekt och spara i databasen samt uppdatera IsLoaned = true
             DateOnly dueDate = DateOnly.FromDateTime(DateTime.Today).AddDays(rentalDays);
             MovieRental movieRental = new(
                 null,
@@ -122,8 +145,7 @@ public class UserInterface
             return;
         }
         
-        if (!ConfirmOrder(receiptRows))
-            return;
+        //LÄGG TILL: Skriv ut order sammanfattning för bekräftning innan Rental skapas
 
         int rentalId;
         try
@@ -177,7 +199,7 @@ public class UserInterface
 
         Console.WriteLine($"Kund: {receipt.Customer}");
         Console.WriteLine($"Kvittonummer: {receipt.OrderNr}");
-        
+
         Console.WriteLine("----------------------------------------------");
         Console.WriteLine($"{"Film",-20} {"Dagar",5} {"Pris/dag",10} {"Totalt",10}");
         Console.WriteLine("----------------------------------------------");
