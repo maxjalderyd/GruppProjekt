@@ -238,7 +238,6 @@ order by Customer.Id desc
     public void ReturnMovie(MovieCopy movie)
     {
         using IDbConnection db = new MySqlConnection(connectionString);
-        db.Open();
 
         using IDbTransaction transaction = db.BeginTransaction();
 
@@ -247,15 +246,6 @@ order by Customer.Id desc
             UPDATE MovieRental
             SET ReturnDate = CURRENT_DATE()
             WHERE MovieCopyId = @MovieCopyId AND ReturnDate IS NULL
-            """,
-            new { MovieCopyId = movie.Id },
-            transaction);
-
-        int updatedCopies = db.Execute(
-            """
-            UPDATE MovieCopy
-            SET IsLoaned = false
-            WHERE Id = @MovieCopyId AND IsLoaned = true
             """,
             new { MovieCopyId = movie.Id },
             transaction);
