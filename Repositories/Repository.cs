@@ -264,7 +264,7 @@ order by Customer.Id desc
         receipt.DiscountPercentage = discount.ChooseDiscount();
     }
 
-    public LateInvoice? ReturnMovie(MovieRental movieRental)
+    public LateInvoice? ReturnMovie(MovieRental movieRental) //FIXME fixa en invoice för inte sena ilämningar
     {
         using IDbConnection db = new MySqlConnection(connectionString);
         db.Open();
