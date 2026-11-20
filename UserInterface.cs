@@ -81,9 +81,11 @@ public class UserInterface
         while (true)
         {
             //LÄGG TILL: Möjlighet att avbryta när som helst
-            (MovieCopy? movieCopy, int rentalDays) = GetMovie();
+            MovieCopy? movieCopy = GetMovie();
             if (movieCopy == null)
                 continue;
+
+            int rentalDays = GetRentalDays();
 
             //Skapa MovieRental objekt
             DateOnly dueDate = DateOnly.FromDateTime(DateTime.Today).AddDays(rentalDays);
@@ -153,6 +155,82 @@ public class UserInterface
         PrintReceipt(receipt);
         Thread.Sleep(3000);
     }
+    public Customer? GetCustomer()
+    {
+        while (true)
+        {
+            Console.WriteLine("Tryck [Q] för att avsluta.");
+            Console.Write("Namn:\n> ");
+
+            string name = Console.ReadLine() ?? "";
+
+            if (name.Equals("Q", StringComparison.OrdinalIgnoreCase))
+                return null;
+
+            Console.Write("Personnummer [YYYY-MM-DD]:\n> ");
+            string birthdateString = Console.ReadLine() ?? "";
+            DateOnly birthDate = DateOnly.Parse(birthdateString);
+
+            Console.Write("Email:\n> ");
+            string mail = Console.ReadLine() ?? "";
+
+            Console.Write("Telefonnummer:\n> ");
+            string phone = Console.ReadLine() ?? "";
+
+            Customer? customer = repo.GetCustomer(name, birthDate, mail, phone);
+            if (customer == null)
+            {
+                Console.WriteLine("Det finns ingen kund som matchar. Kontrollera info eller registrera ny kund.");
+                continue;
+            }
+            return customer;
+        }
+    }
+    public MovieCopy? GetMovie()
+    {
+        Console.Write("Ange streckkod:\n> ");
+        string barcode = Console.ReadLine() ?? "";
+
+        MovieCopy? movieCopy = repo.GetMovieWithBarcode(barcode);
+
+        //Kontrollerar om streckkoden är giltig
+        if (movieCopy == null)
+        {
+            Console.WriteLine("Ingen film med den streckkoden finns.");
+            return null;
+        }
+
+        //Kontrollerar om filmen har skickats tillbaka till utgivaren
+        if (!movieCopy.IsAvailable)
+        {
+            Console.WriteLine("Filmen är inte längre tillgänglig.");
+            return null;
+        }
+
+        //Kontrollerar om filmen redan är utlånad
+        if (repo.IsMovieRented(movieCopy))
+        {
+            Console.WriteLine("Filmen är redan utlånad.");
+            return null;
+        }
+
+        return movieCopy;
+    }
+    public int GetRentalDays()
+    {
+        while (true)
+        {
+            Console.Write("I hur många dagar vill du hyra filmen? (1-30 dagar)\n> ");
+            string strRentalDays = Console.ReadLine() ?? "";
+
+            if (!int.TryParse(strRentalDays, out int rentalDays))
+                Console.WriteLine("Felaktig inmatning. Ange endast heltal.");
+            else if (rentalDays < 1 || rentalDays > 30)
+                Console.WriteLine("Du kan endast hyra en film i 1-30 dagar.");
+            else
+                return rentalDays;
+        }
+    }
     public bool ConfirmOrder(List<MovieReceiptRow> receiptRows)
     {
         int totalPrice = 0;
@@ -198,78 +276,6 @@ public class UserInterface
         Console.WriteLine("----------------------------------------------");
         Console.WriteLine($"{"TOTALPRIS:",-36} {receipt.TotalPrice,10:C2}");
         Console.WriteLine("==============================================");
-    }
-    public Customer? GetCustomer()
-    {
-        while (true)
-        {
-            Console.WriteLine("Tryck [Q] för att avsluta.");
-            Console.Write("Namn:\n> ");
-
-            string name = Console.ReadLine() ?? "";
-
-            if (name.Equals("Q", StringComparison.OrdinalIgnoreCase))
-                return null;
-
-            Console.Write("Personnummer [YYYY-MM-DD]:\n> ");
-            string birthdateString = Console.ReadLine() ?? "";
-            DateOnly birthDate = DateOnly.Parse(birthdateString);
-
-            Console.Write("Email:\n> ");
-            string mail = Console.ReadLine() ?? "";
-
-            Console.Write("Telefonnummer:\n> ");
-            string phone = Console.ReadLine() ?? "";
-
-            Customer? customer = repo.GetCustomer(name, birthDate, mail, phone);
-            if (customer == null)
-            {
-                Console.WriteLine("Det finns ingen kund som matchar. Kontrollera info eller registrera ny kund.");
-                continue;
-            }
-            return customer;
-        }
-    }
-    public (MovieCopy? movieCopy, int rentalDays) GetMovie()
-    {
-        Console.Write("Ange streckkod:\n> ");
-        string barcode = Console.ReadLine() ?? "";
-
-        MovieCopy? movieCopy = repo.GetMovieWithBarcode(barcode);
-
-        //Kontrollerar om streckkoden är giltig
-        if (movieCopy == null)
-        {
-            Console.WriteLine("Ingen film med den streckkoden finns.");
-            return (null, 0);
-        }
-
-        //Kontrollerar om filmen har skickats tillbaka till utgivaren
-        if (!movieCopy.IsAvailable)
-        {
-            Console.WriteLine("Filmen är inte längre tillgänglig.");
-            return (null, 0);
-        }
-
-        //Kontrollerar om filmen redan är utlånad
-        if (repo.IsMovieRented(movieCopy))
-        {
-            Console.WriteLine("Filmen är redan utlånad.");
-            return (null, 0);
-        }
-
-        while (true)
-        {
-            Console.Write("I hur många dagar vill du hyra filmen? (1-30 dagar)\n> ");
-            string strRentalDays = Console.ReadLine() ?? "";
-
-            if (!int.TryParse(strRentalDays, out int rentalDays))
-                Console.WriteLine("Felaktig inmatning. Ange endast heltal.");
-            else if (rentalDays < 1 || rentalDays > 30)
-                Console.WriteLine("Du kan endast hyra en film i 1-30 dagar.");
-            else
-                return (movieCopy, rentalDays);
-        }
     }
     public void CreateNewCustomer()
     {
