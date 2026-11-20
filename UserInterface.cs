@@ -19,14 +19,14 @@ public class UserInterface
         {
             Console.WriteLine("Hej vad vill du göra?");
             Console.WriteLine("1. Hyra film"); //vanja - färdig (lägg till validering)
-            Console.WriteLine("2. Visa alla filmer");
+            Console.WriteLine("2. Visa alla filmer"); //max - klar.
             Console.WriteLine("3. Lägg in ny film"); // peter
-            Console.WriteLine("4. Lämna tillbaka film");
+            Console.WriteLine("4. Lämna tillbaka film");//peter
             Console.WriteLine("5. Lägg till ny kund"); //vanja - färdig (lägg till validering)
             Console.WriteLine("6. Ta bort film ur katalog");
             Console.WriteLine("7. Skicka faktura");
-            Console.WriteLine("8. Visa försenade lån"); //max
-            Console.WriteLine("9. Avsluta");
+            Console.WriteLine("8. Visa försenade lån"); //max --klar
+            Console.WriteLine("9. Avsluta"); // max - klar
             Console.Write("Välj: ");
             string val = Console.ReadLine() ?? "";
 
@@ -56,9 +56,15 @@ public class UserInterface
                     ShowAllLateMovies(repo.GetLateReturns());
                     return;
                 case "9":
-                    System.Console.WriteLine("avslutar");
-                    Thread.Sleep(2000);
-                    return;
+    for (int i = 0; i < 9; i++)
+    {
+        string dots = new string('.', (i % 3) + 1).PadRight(3);
+        Console.Write($"\ravslutar {dots}");
+        Thread.Sleep(300);
+    }
+    Console.WriteLine();
+    return;
+
             }
         }
     }
@@ -304,5 +310,16 @@ public class UserInterface
     public void DeleteMovieUi(string delMovie)
     {
         System.Console.WriteLine(delMovie);
+    }
+
+    public void QuitUi()
+    {
+        for (int i = 0; i < 9; i++)
+    {
+        string dots = new string('.', (i % 3) + 1).PadRight(3);
+        Console.Write($"\ravslutar {dots}");
+        Thread.Sleep(300);
+    }
+    Console.WriteLine();
     }
 }
