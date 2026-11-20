@@ -1,5 +1,3 @@
 <Solution>
   <Project Path="GruppProjekt.csproj" />
-  <Project Path="tests/models.tests/models.tests.csproj" />
-  <Project Path="tests/repo.tests/repo.tests.csproj" />
 </Solution>
