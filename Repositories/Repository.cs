@@ -147,17 +147,27 @@ public class Repository
             System.Console.WriteLine($"{m.Title}, {m.PricePerDay}");
         }
     }
-    public IEnumerable<Movie> GetAllNotRentedMovies()
+    public IEnumerable<Movie> GetAllNotRentedMovies() // hämtar alla filmer som har minst ett ledigt exemplar
     {
         using IDbConnection db = new MySqlConnection(connectionString);
+
+        // DISTINCT tar bort dubbletter om en film har flera lediga exemplar.
+        // NOT EXISTS säkerställer att kopian inte har någon aktiv uthyrning (ReturnDate IS NULL).
         string sql = """
-                    SELECT Movie.Id, Movie.Title, Movie.ReleaseDate, Movie.PricePerDay
+                    SELECT DISTINCT Movie.Id, Movie.Title, Movie.ReleaseDate, Movie.PricePerDay
                     FROM Movie
-                    INNER JOIN MovieCopy on Movie.Id = MovieCopy.MovieId
-                    WHERE MovieCopy.IsLoaned = false AND Movie.IsDeleted = 0
+                    INNER JOIN MovieCopy ON Movie.Id = MovieCopy.MovieId
+                    WHERE MovieCopy.IsAvailable = true 
+                      AND Movie.IsDeleted = 0
+                      AND NOT EXISTS (
+                          SELECT 1 
+                          FROM MovieRental 
+                          WHERE MovieRental.MovieCopyId = MovieCopy.Id 
+                            AND MovieRental.ReturnDate IS NULL
+                      )
                     """;
-        IEnumerable<Movie> movies = db.Query<Movie>(sql).ToList();
-        return movies;
+
+        return db.Query<Movie>(sql).ToList();
     }
 
     public Customer? GetCustomer(string name, DateOnly birth, string mail, string phone)
@@ -179,10 +189,11 @@ public class Repository
         return null;
     }
 
-    public List<LateRentalsDTO> GetLateReturns()
+    public List<LateRentalsDTO> GetLateReturns() // Hämtar en lista över alla försenade uthyrningar som ännu inte har återlämnats, inklusive beräknad förseningsavgift.
     {
         List<LateRentalsDTO> dTOs = new List<LateRentalsDTO>();
         using IDbConnection connection = new MySqlConnection(connectionString);
+        // Hämtar kunduppgifter, filmkopia samt antal försenade dagar och total förseningsavgift
         string GetNotReturned =
 """
 SELECT Customer.Name AS Name, Customer.PhoneNumber AS PhoneNumber, MovieCopy.Barcode AS Barcode, Movie.Title AS MovieTitle, datediff(curdate(), MovieRental.ExpectedReturnDate) AS NumberOfDaysLate,
@@ -196,6 +207,7 @@ where curdate() > MovieRental.ExpectedReturnDate && ReturnDate is null AND Movie
 group by Customer.Name, Customer.PhoneNumber, Customer.Id, MovieCopy.Barcode, Movie.Title, MovieRental.ExpectedReturnDate
 order by Customer.Id desc      
 """;
+        // Dapper mappar kolumnerna direkt till LateRentalsDTO via aliasen
         IEnumerable<LateRentalsDTO> list = connection.Query<LateRentalsDTO>(GetNotReturned).ToList();
         foreach (LateRentalsDTO d in list)
         {
@@ -206,8 +218,11 @@ order by Customer.Id desc
 
     public string DeleteMovie(string movieName)
     {
-        // Hämta filmens Id
+        // Markerar en film som raderad (soft delete) om den finns och inte har några aktiva uthyrningar.
+        // parametern name="movieName">Titeln på filmen som ska tas bort.
+        // returnerar Ett statusmeddelande som beskriver resultatet av åtgärden.
         using IDbConnection connection = new MySqlConnection(connectionString);
+        //hämtar filmens id
         string sqlGetMovieId = "SELECT Movie.Id FROM Movie WHERE IsDeleted = 0 AND Movie.Title = @Title";
         int? movieId = connection.QueryFirstOrDefault<int?>(sqlGetMovieId, new { Title = movieName });
         if (movieId == null)
@@ -215,7 +230,7 @@ order by Customer.Id desc
             return $"fanns ingen film med det namnet eller redan markerats som INAKTIV";
 
         }
-
+        // 2. Kontrollera om något exemplar av filmen är uthyrt just nu (saknar återlämningsdatum)
         string CheckActiveRentals = @"SELECT EXISTS (
                                     SELECT 1
                                     FROM MovieRental
@@ -228,7 +243,7 @@ order by Customer.Id desc
         {
             return $"kan ej radera {movieName} då det finns aktiva uthyrningar på den";
         }
-
+        // 3. Utför en soft delete genom att sätta IsDeleted till 1
         string softDeleteSql = @"UPDATE Movie
                                 SET IsDeleted = 1
                                 WHERE Movie.Id = @movieId";
@@ -237,7 +252,7 @@ order by Customer.Id desc
 
     }
 
-    public int CreateNewCustomer(string name, DateOnly birthDate, string email, string phoneNumber)
+    public int CreateNewCustomer(string name, DateOnly birthDate, string email, string phoneNumber) // lägg in en ny kund i databasen
     {
         using IDbConnection db = new MySqlConnection(connectionString);
         string sql =
@@ -245,10 +260,10 @@ order by Customer.Id desc
         INSERT INTO Customer (Name, BirthDate, Email, PhoneNumber)
         VALUES (@name, @birthDate, @email, @phoneNumber)
         """;
-        return db.Execute(sql, new { name, birthDate = birthDate.ToString("yyyy-MM-dd"), email, phoneNumber });
+        return db.Execute(sql, new { name, birthDate = birthDate.ToString("yyyy-MM-dd"), email, phoneNumber }); // Konverterar DateOnly till yyyy-MM-dd så att MySQL kan tolka datumet korrekt
     }
 
-    public int AddNewMovie(string title, DateTime releaseDate, decimal pricePerDay)
+    public int AddNewMovie(string title, DateTime releaseDate, decimal pricePerDay) // lägg in en ny film in i databasen
     {
         using IDbConnection db = new MySqlConnection(connectionString);
         string sql = """
@@ -258,13 +273,13 @@ order by Customer.Id desc
         return db.Execute(sql, new { title, releaseDate, pricePerDay });
     }
 
-    public void GetDiscountOnReceipt(Receipt receipt)
+    public void GetDiscountOnReceipt(Receipt receipt) // discount klass/interface metod som ej är implementerad
     {
         AdjustablePercent discount = new AdjustablePercent("AdjustablePercent");
         receipt.DiscountPercentage = discount.ChooseDiscount();
     }
 
-    public LateInvoice? ReturnMovie(MovieRental movieRental) //FIXME fixa en invoice för inte sena ilämningar
+    public LateInvoice? ReturnMovie(MovieRental movieRental)
     {
         using IDbConnection db = new MySqlConnection(connectionString);
         db.Open();
@@ -282,7 +297,7 @@ order by Customer.Id desc
         transaction.Commit();
         return GetRental(movieRental.MovieCopyId);
     }
-    public LateInvoice? GetRental(int movieCopyId)
+    public LateInvoice? GetRental(int movieCopyId) // Hämta alla försenade återlämningar, returnerar ett objekt med information för fersenad inlämnings faktura
     {
         using IDbConnection db = new MySqlConnection(connectionString);
         string GetRentalSql = """
