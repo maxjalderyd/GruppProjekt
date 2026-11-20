@@ -245,7 +245,7 @@ order by Customer.Id desc
         INSERT INTO Customer (Name, BirthDate, Email, PhoneNumber)
         VALUES (@name, @birthDate, @email, @phoneNumber)
         """;
-        return db.Execute(sql, new { name, birthDate, email, phoneNumber });
+        return db.Execute(sql, new { name, birthDate = birthDate.ToString("yyyy-MM-dd"), email, phoneNumber });
     }
 
     public int AddNewMovie(string title, DateTime releaseDate, decimal pricePerDay)
