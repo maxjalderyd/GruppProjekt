@@ -36,6 +36,7 @@ public class UserInterface
                     RentMovie();
                     break;
                 case "2":
+                        repo.ShowAllMovies();
                     return;
                 case "3":
                     return;
