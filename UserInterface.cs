@@ -81,9 +81,11 @@ public class UserInterface
         while (true)
         {
             //LÄGG TILL: Möjlighet att avbryta när som helst
-            (MovieCopy? movieCopy, int rentalDays) = GetMovie();
+            MovieCopy? movieCopy = GetMovie();
             if (movieCopy == null)
                 continue;
+
+            int rentalDays = GetRentalDays();
 
             //Skapa MovieRental objekt
             DateOnly dueDate = DateOnly.FromDateTime(DateTime.Today).AddDays(rentalDays);
@@ -95,7 +97,7 @@ public class UserInterface
                 movieCopy.Movie.PricePerDay
             );
 
-            //Kontrollerar att filmen inte redan finns i listan
+            //Kontrollerar att filmen inte redan lagts till
             if (movies.Any(movie => movie.MovieCopyId == movieRental.MovieCopyId))
             {
                 Console.WriteLine("Film är redan tillagd.");
@@ -152,6 +154,22 @@ public class UserInterface
         }
         PrintReceipt(receipt);
         Thread.Sleep(3000);
+    }
+
+    public int GetRentalDays()
+    {
+        while (true)
+        {
+            Console.Write("I hur många dagar ska filmen hyras? (1-30 dagar)\n> ");
+            string strRentalDays = Console.ReadLine() ?? "";
+
+            if (!int.TryParse(strRentalDays, out int rentalDays))
+                Console.WriteLine("Felaktig inmatning. Ange endast heltal.");
+            else if (rentalDays < 1 || rentalDays > 30)
+                Console.WriteLine("Kan endast hyra en film i 1-30 dagar.");
+            else
+                return rentalDays;
+        }
     }
     public bool ConfirmOrder(List<MovieReceiptRow> receiptRows)
     {
@@ -230,7 +248,7 @@ public class UserInterface
             return customer;
         }
     }
-    public (MovieCopy? movieCopy, int rentalDays) GetMovie()
+    public MovieCopy? GetMovie()
     {
         Console.Write("Ange streckkod:\n> ");
         string barcode = Console.ReadLine() ?? "";
@@ -241,35 +259,25 @@ public class UserInterface
         if (movieCopy == null)
         {
             Console.WriteLine("Ingen film med den streckkoden finns.");
-            return (null, 0);
+            return null;
         }
 
         //Kontrollerar om filmen har skickats tillbaka till utgivaren
         if (!movieCopy.IsAvailable)
         {
             Console.WriteLine("Filmen är inte längre tillgänglig.");
-            return (null, 0);
+            return null;
         }
 
         //Kontrollerar om filmen redan är utlånad
         if (repo.IsMovieRented(movieCopy))
         {
             Console.WriteLine("Filmen är redan utlånad.");
-            return (null, 0);
+            return null;
         }
 
-        while (true)
-        {
-            Console.Write("I hur många dagar vill du hyra filmen? (1-30 dagar)\n> ");
-            string strRentalDays = Console.ReadLine() ?? "";
+        return movieCopy;
 
-            if (!int.TryParse(strRentalDays, out int rentalDays))
-                Console.WriteLine("Felaktig inmatning. Ange endast heltal.");
-            else if (rentalDays < 1 || rentalDays > 30)
-                Console.WriteLine("Du kan endast hyra en film i 1-30 dagar.");
-            else
-                return (movieCopy, rentalDays);
-        }
     }
     public void CreateNewCustomer()
     {
