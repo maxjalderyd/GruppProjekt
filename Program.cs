@@ -1,4 +1,5 @@
 ﻿using GruppProjekt;
 Repository repo = new();
-UserInterface userInterface = new(repo);
+RentalService rentalService = new(repo);
+UserInterface userInterface = new(repo, rentalService);
 userInterface.Start();

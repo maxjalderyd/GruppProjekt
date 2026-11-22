@@ -6,10 +6,14 @@ using MySqlX.XDevAPI.CRUD;
 namespace GruppProjekt;
 public class UserInterface
 {
+    //Ui behöver inte veta om repositoriet när RentalService är implementerat
     private readonly Repository repo;
-    public UserInterface(Repository repo)
+    //RentalService sköter affärslogik och databasanrop
+    private readonly RentalService rentalService;
+    public UserInterface(Repository repo, RentalService rentalService)
     {
         this.repo = repo;
+        this.rentalService = rentalService;
     }
 
     public void Start()
@@ -156,6 +160,23 @@ public class UserInterface
         Thread.Sleep(3000);
     }
 
+    public MovieCopy? GetMovie()
+    {
+        Console.Write("Ange streckkod:\n> ");
+        string barcode = Console.ReadLine() ?? "";
+
+        //LÄGG TILL: Steckkod format validering
+
+        MovieCopy? movieCopy = rentalService.GetAvailableMovie(barcode);
+
+        if (movieCopy == null)
+        {
+            Console.WriteLine("Filmen är inte tillgänglig för uthyrning/ogiltig streckkod.");
+            return null;
+        }
+
+        return movieCopy;
+    }
     public int GetRentalDays()
     {
         while (true)
@@ -247,37 +268,6 @@ public class UserInterface
             }
             return customer;
         }
-    }
-    public MovieCopy? GetMovie()
-    {
-        Console.Write("Ange streckkod:\n> ");
-        string barcode = Console.ReadLine() ?? "";
-
-        MovieCopy? movieCopy = repo.GetMovieWithBarcode(barcode);
-
-        //Kontrollerar om streckkoden är giltig
-        if (movieCopy == null)
-        {
-            Console.WriteLine("Ingen film med den streckkoden finns.");
-            return null;
-        }
-
-        //Kontrollerar om filmen har skickats tillbaka till utgivaren
-        if (!movieCopy.IsAvailable)
-        {
-            Console.WriteLine("Filmen är inte längre tillgänglig.");
-            return null;
-        }
-
-        //Kontrollerar om filmen redan är utlånad
-        if (repo.IsMovieRented(movieCopy))
-        {
-            Console.WriteLine("Filmen är redan utlånad.");
-            return null;
-        }
-
-        return movieCopy;
-
     }
     public void CreateNewCustomer()
     {
