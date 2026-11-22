@@ -26,6 +26,12 @@ public class RentalService
         return movieCopy;
     }
 
+    //En film får hyras i 1-30 dagar
+    public bool IsValidRentalDays(int rentalDays)
+    {
+        return rentalDays >= 1 && rentalDays <= 30;
+    }
+
     //En film kan bara läggas till EN gång i EN uthyrning
     public bool IsMovieAlreadyAdded(List<MovieRental> movies, MovieRental movieRental)
     {
