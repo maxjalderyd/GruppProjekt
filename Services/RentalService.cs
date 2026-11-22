@@ -26,6 +26,12 @@ public class RentalService
         return movieCopy;
     }
 
+    //En film kan bara läggas till EN gång i EN uthyrning
+    public bool IsMovieAlreadyAdded(List<MovieRental> movies, MovieRental movieRental)
+    {
+        return movies.Any(movie => movie.MovieCopyId == movieRental.MovieCopyId);
+    }
+
     public MovieRental CreateMovieRental(MovieCopy movieCopy, int rentalDays)
     {
         DateOnly dueDate = DateOnly.FromDateTime(DateTime.Today).AddDays(rentalDays);
@@ -37,5 +43,10 @@ public class RentalService
             dueDate,
             movieCopy.Movie.PricePerDay
         );
+    }
+
+    public int CreateRental(int customerId, List<MovieRental> movies)
+    {
+        return repo.CreateRentalWithMovies(customerId, movies);
     }
 }

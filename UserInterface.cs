@@ -93,8 +93,7 @@ public class UserInterface
 
             MovieRental movieRental = rentalService.CreateMovieRental(movieCopy, rentalDays);
 
-            //Kontrollerar att filmen inte redan lagts till
-            if (movies.Any(movie => movie.MovieCopyId == movieRental.MovieCopyId))
+            if (rentalService.IsMovieAlreadyAdded(movies, movieRental))
             {
                 Console.WriteLine("Film är redan tillagd.");
                 continue;
@@ -133,7 +132,7 @@ public class UserInterface
         //Försöker skapa Rental och MovieRentals i databasen
         try
         {
-            rentalId = repo.CreateRentalWithMovies(customer.Id, movies);
+            rentalId = rentalService.CreateRental(customer.Id, movies);
         }
         catch
         {
