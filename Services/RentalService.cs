@@ -25,4 +25,17 @@ public class RentalService
         
         return movieCopy;
     }
+
+    public MovieRental CreateMovieRental(MovieCopy movieCopy, int rentalDays)
+    {
+        DateOnly dueDate = DateOnly.FromDateTime(DateTime.Today).AddDays(rentalDays);
+
+        return new MovieRental (
+            null,
+            movieCopy.Id,
+            null,
+            dueDate,
+            movieCopy.Movie.PricePerDay
+        );
+    }
 }

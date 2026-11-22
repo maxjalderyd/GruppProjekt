@@ -91,15 +91,7 @@ public class UserInterface
 
             int rentalDays = GetRentalDays();
 
-            //Skapa MovieRental objekt
-            DateOnly dueDate = DateOnly.FromDateTime(DateTime.Today).AddDays(rentalDays);
-            MovieRental movieRental = new(
-                null,
-                movieCopy.Id,
-                null,
-                dueDate,
-                movieCopy.Movie.PricePerDay
-            );
+            MovieRental movieRental = rentalService.CreateMovieRental(movieCopy, rentalDays);
 
             //Kontrollerar att filmen inte redan lagts till
             if (movies.Any(movie => movie.MovieCopyId == movieRental.MovieCopyId))
