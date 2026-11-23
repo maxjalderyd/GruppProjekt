@@ -1,21 +1,15 @@
-using System.Text.RegularExpressions;
-using Dapper;
-using MySql.Data.MySqlClient;
-using MySqlX.XDevAPI.CRUD;
-
 namespace GruppProjekt;
 public class UserInterface
 {
-    //Ui behöver inte veta om repositoriet när Service klasser är implementerade
-    private readonly Repository repo;
     //Service klasser sköter affärslogik och databasanrop
     private readonly RentalService rentalService;
     private readonly MovieService movieService;
-    public UserInterface(Repository repo, RentalService rentalService, MovieService movieService)
+    private readonly CustomerService customerService;
+    public UserInterface(RentalService rentalService, MovieService movieService, CustomerService customerService)
     {
-        this.repo = repo;
         this.rentalService = rentalService;
         this.movieService = movieService;
+        this.customerService = customerService;
     }
 
     public void Start()
@@ -264,7 +258,7 @@ public class UserInterface
             Console.Write("Telefonnummer:\n> ");
             string phone = Console.ReadLine() ?? "";
 
-            Customer? customer = repo.GetCustomer(name, birthDate, mail, phone);
+            Customer? customer = customerService.GetCustomer(name, birthDate, mail, phone);
             if (customer == null)
             {
                 Console.WriteLine("Det finns ingen kund som matchar. Kontrollera info eller registrera ny kund.");
@@ -293,7 +287,7 @@ public class UserInterface
         Console.Write("Telefonnummer:\n> ");
         string phoneNumber = Console.ReadLine() ?? "";
 
-        int rowsAffected = repo.CreateNewCustomer(name, birthDate, email, phoneNumber);
+        int rowsAffected = customerService.CreateNewCustomer(name, birthDate, email, phoneNumber);
         if (rowsAffected == 1)
             Console.WriteLine("Kunden las till.");
         else

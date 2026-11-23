@@ -2,5 +2,6 @@
 Repository repo = new();
 RentalService rentalService = new(repo);
 MovieService movieService = new(repo);
-UserInterface userInterface = new(repo, rentalService, movieService);
+CustomerService customerService = new(repo);
+UserInterface userInterface = new(rentalService, movieService, customerService);
 userInterface.Start();
