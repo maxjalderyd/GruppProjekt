@@ -36,39 +36,46 @@ public class UserInterface
                     RentMovie();
                     break;
                 case "2":
-                        repo.ShowAllMovies();
-                    return;
+                    ShowAllMovies();
+                    break;
                 case "3":
-                    return;
+                    break;
                 case "4":
-                    return;
+                    break;
                 case "5":
                     CreateNewCustomer();
                     break;
                 case "6":
                     System.Console.WriteLine("vilken film vill du radera? Namn");
-                    repo.ShowAllMovies();
+                    ShowAllMovies();
                     DeleteMovieUi(repo.DeleteMovie(Console.ReadLine()));
-                    return;
+                    break;
                 case "7":
-                    return;
+                    break;
                 case "8":
                     ShowAllLateMovies(repo.GetLateReturns());
-                    return;
+                    break;
                 case "9":
-    for (int i = 0; i < 9; i++)
-    {
-        string dots = new string('.', (i % 3) + 1).PadRight(3);
-        Console.Write($"\ravslutar {dots}");
-        Thread.Sleep(300);
-    }
-    Console.WriteLine();
-    return;
-
+                    for (int i = 0; i < 9; i++)
+                    {
+                        string dots = new string('.', (i % 3) + 1).PadRight(3);
+                        Console.Write($"\ravslutar {dots}");
+                        Thread.Sleep(300);
+                    }
+                    Console.WriteLine();
+                    return;
             }
         }
     }
 
+    public void ShowAllMovies()
+    {
+        List<Movie> movies = repo.GetAllMovies();
+        foreach (Movie m in movies)
+        {
+            Console.WriteLine($"{m.Title}, {m.PricePerDay}");
+        }
+    }
     public void RentMovie()
     {
         Customer? customer = GetCustomer();

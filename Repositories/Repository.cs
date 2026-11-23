@@ -132,7 +132,7 @@ public class Repository
         }
     }
 
-    public void ShowAllMovies()
+    public List<Movie> GetAllMovies()
     {
         using IDbConnection db = new MySqlConnection(connectionString);
         string sql = """
@@ -141,11 +141,7 @@ public class Repository
                     INNER JOIN MovieCopy on Movie.Id = MovieCopy.MovieId
                     WHERE MovieCopy.IsAvailable = false AND Movie.IsDeleted = 0
                     """;
-        IEnumerable<Movie> movies = db.Query<Movie>(sql).ToList();
-        foreach (Movie m in movies)
-        {
-            System.Console.WriteLine($"{m.Title}, {m.PricePerDay}");
-        }
+        return db.Query<Movie>(sql).ToList();
     }
     public IEnumerable<Movie> GetAllNotRentedMovies() // hämtar alla filmer som har minst ett ledigt exemplar
     {
