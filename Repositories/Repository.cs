@@ -136,10 +136,10 @@ public class Repository
     {
         using IDbConnection db = new MySqlConnection(connectionString);
         string sql = """
-                    SELECT Movie.Id, Movie.Title, Movie.ReleaseDate, Movie.PricePerDay
+                    SELECT DISTINCT Movie.Id, Movie.Title, Movie.ReleaseDate, Movie.PricePerDay
                     FROM Movie
                     INNER JOIN MovieCopy on Movie.Id = MovieCopy.MovieId
-                    WHERE MovieCopy.IsAvailable = false AND Movie.IsDeleted = 0
+                    WHERE MovieCopy.IsAvailable = true AND Movie.IsDeleted = 0
                     """;
         return db.Query<Movie>(sql).ToList();
     }

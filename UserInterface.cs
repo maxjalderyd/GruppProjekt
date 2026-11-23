@@ -24,7 +24,7 @@ public class UserInterface
             Console.WriteLine("4. Lämna tillbaka film");//peter
             Console.WriteLine("5. Lägg till ny kund"); //vanja - färdig (lägg till validering)
             Console.WriteLine("6. Ta bort film ur katalog"); //max -- klar
-            Console.WriteLine("7. Skicka faktura"); // automatiserat för försenade inlämingar
+            Console.WriteLine("7. Skicka faktura-automatiserat "); // automatiserat för försenade inlämingar
             Console.WriteLine("8. Visa försenade lån"); //max -- klar
             Console.WriteLine("9. Avsluta"); // max - klar
             Console.Write("Välj: ");
@@ -36,13 +36,14 @@ public class UserInterface
                     RentMovie();
                     break;
                 case "2":
+                        Console.Clear();
                        WriteMovies(repo.GetAllMovies());
                         Thread.Sleep(5000);
-                    return;
+                    break;
                 case "3":
-                    return;
+                    break;
                 case "4":
-                    return;
+                    break;
                 case "5":
                     CreateNewCustomer();
                     break;
@@ -50,12 +51,12 @@ public class UserInterface
                     System.Console.WriteLine("vilken film vill du radera? Namn");
                     WriteMovies(repo.GetAllMovies());
                     DeleteMovieUi(repo.DeleteMovie(Console.ReadLine()));
-                    return;
+                    break;
                 case "7":
-                    return;
+                    break;
                 case "8":
                     ShowAllLateMovies(repo.GetLateReturns());
-                    return;
+                    break;
                 case "9":
                 QuitUi();
                 return;
