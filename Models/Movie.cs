@@ -11,4 +11,9 @@ public class Movie
         ReleaseDate = releaseDate;
         PricePerDay = pricePerDay;
     }
+
+    public override string ToString()
+    {
+        return $"[{Id}] {Title} {ReleaseDate} {PricePerDay}";
+    }
 }
