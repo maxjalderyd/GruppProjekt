@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Reflection.Metadata;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using Dapper;
 using MySql.Data.MySqlClient;
@@ -52,6 +53,10 @@ public class UserInterface
                     repo.AddNewMovie(name, releaseDatum, price);
                     break;
                 case "4":
+                        System.Console.WriteLine("skriv in barcode");
+                        string copy = Console.ReadLine();
+                       MovieCopy c = repo.GetMovieWithBarcode(copy);
+                        repo.ReturnMovie(c);
                     break;
                 case "5":
                     CreateNewCustomer();

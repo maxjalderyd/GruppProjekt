@@ -1,6 +1,7 @@
 using MySql.Data.MySqlClient;
 using Dapper;
 using System.Data;
+using Org.BouncyCastle.Bcpg;
 
 public class Repository
 {
@@ -259,7 +260,7 @@ order by Customer.Id desc
         return db.Execute(sql, new { name, birthDate = birthDate.ToString("yyyy-MM-dd"), email, phoneNumber }); // Konverterar DateOnly till yyyy-MM-dd så att MySQL kan tolka datumet korrekt
     }
 
-    public int AddNewMovie(string? title, DateTime releaseDate, decimal pricePerDay) // lägg in en ny film in i databasen
+    public int AddNewMovie(string title, DateTime releaseDate, decimal pricePerDay) // lägg in en ny film in i databasen
     {
         using IDbConnection db = new MySqlConnection(connectionString);
         string sql = """
@@ -275,8 +276,9 @@ order by Customer.Id desc
         receipt.DiscountPercentage = discount.ChooseDiscount();
     }
 
-    public LateInvoice? ReturnMovie(MovieRental movieRental)
+    public LateInvoice? ReturnMovie(MovieCopy movieCopy)
     {
+        
         using IDbConnection db = new MySqlConnection(connectionString);
         db.Open();
         using IDbTransaction transaction = db.BeginTransaction();
@@ -287,13 +289,14 @@ order by Customer.Id desc
             SET ReturnDate = CURRENT_DATE()
             WHERE MovieCopyId = @MovieCopyId AND ReturnDate IS NULL
             """,
-            new { MovieCopyId = movieRental.MovieCopyId },
+            new { MovieCopyId = movieCopy.Id },
             transaction);
 
         transaction.Commit();
-        return GetRental(movieRental.MovieCopyId);
+        return GetLateRentalsToInvoice(movieCopy.Id);
     }
-    public LateInvoice? GetRental(int movieCopyId) // Hämta alla försenade återlämningar, returnerar ett objekt med information för fersenad inlämnings faktura
+
+    public LateInvoice? GetLateRentalsToInvoice(int movieCopyId) // Hämta alla försenade återlämningar, returnerar ett objekt med information för fersenad inlämnings faktura
     {
         using IDbConnection db = new MySqlConnection(connectionString);
         string GetRentalSql = """
