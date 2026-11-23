@@ -1,9 +1,12 @@
+using System.Reflection;
+using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
 using Dapper;
 using MySql.Data.MySqlClient;
 using MySqlX.XDevAPI.CRUD;
 
 namespace GruppProjekt;
+
 public class UserInterface
 {
     private readonly Repository repo;
@@ -20,13 +23,12 @@ public class UserInterface
             Console.WriteLine("Hej vad vill du göra?");
             Console.WriteLine("1. Hyra film"); //vanja - färdig (lägg till validering)
             Console.WriteLine("2. Visa alla filmer"); //max - klar.
-            Console.WriteLine("3. Lägg in ny film"); // peter
-            Console.WriteLine("4. Lämna tillbaka film");//peter
+            Console.WriteLine("3. Lägg in ny film"); // peter - klar
+            Console.WriteLine("4. Lämna tillbaka film");//peter - klar
             Console.WriteLine("5. Lägg till ny kund"); //vanja - färdig (lägg till validering)
             Console.WriteLine("6. Ta bort film ur katalog"); //max -- klar
-            Console.WriteLine("7. Skicka faktura-automatiserat "); // automatiserat för försenade inlämingar
-            Console.WriteLine("8. Visa försenade lån"); //max -- klar
-            Console.WriteLine("9. Avsluta"); // max - klar
+            Console.WriteLine("7. Visa försenade lån"); //max -- klar
+            Console.WriteLine("8. Avsluta"); // max - klar
             Console.Write("Välj: ");
             string val = Console.ReadLine() ?? "";
 
@@ -36,11 +38,18 @@ public class UserInterface
                     RentMovie();
                     break;
                 case "2":
-                        Console.Clear();
-                       WriteMovies(repo.GetAllMovies());
-                        Thread.Sleep(5000);
+                    Console.Clear();
+                    WriteMovies(repo.GetAllMovies());
+                    Thread.Sleep(5000);
                     break;
                 case "3":
+                    Console.Write("Namn: ");
+                    string name = Console.ReadLine();
+                    Console.Write("Releasedatum (YYYY-MM-DD): ");
+                    DateTime releaseDatum = DateTime.Parse(Console.ReadLine());
+                    Console.Write("Pris per dag: ");
+                    decimal price = decimal.Parse(Console.ReadLine());
+                    repo.AddNewMovie(name, releaseDatum, price);
                     break;
                 case "4":
                     break;
@@ -53,13 +62,11 @@ public class UserInterface
                     DeleteMovieUi(repo.DeleteMovie(Console.ReadLine()));
                     break;
                 case "7":
-                    break;
-                case "8":
                     ShowAllLateMovies(repo.GetLateReturns());
                     break;
-                case "9":
-                QuitUi();
-                return;
+                case "8":
+                    QuitUi();
+                    return;
 
             }
         }
@@ -123,7 +130,7 @@ public class UserInterface
             Thread.Sleep(3000);
             return;
         }
-        
+
         if (!ConfirmOrder(receiptRows))
             return;
 
@@ -166,7 +173,7 @@ public class UserInterface
         string choice = Console.ReadLine() ?? "";
         if (choice.Equals("Y", StringComparison.OrdinalIgnoreCase))
             return true;
-        
+
         Console.WriteLine("Order avbryts... ");
         Thread.Sleep(3000);
         return false;
@@ -180,7 +187,7 @@ public class UserInterface
 
         Console.WriteLine($"Kund: {receipt.Customer}");
         Console.WriteLine($"Kvittonummer: {receipt.OrderNr}");
-        
+
         Console.WriteLine("----------------------------------------------");
         Console.WriteLine($"{"Film",-20} {"Dagar",5} {"Pris/dag",10} {"Totalt",10}");
         Console.WriteLine("----------------------------------------------");
@@ -311,17 +318,17 @@ public class UserInterface
     public void QuitUi()
     {
         for (int i = 0; i < 9; i++)
-    {
-        string dots = new string('.', (i % 3) + 1).PadRight(3);
-        Console.Write($"\ravslutar {dots}");
-        Thread.Sleep(300);
-    }
-    Console.WriteLine();
+        {
+            string dots = new string('.', (i % 3) + 1).PadRight(3);
+            Console.Write($"\ravslutar {dots}");
+            Thread.Sleep(300);
+        }
+        Console.WriteLine();
     }
 
     public void WriteMovies(List<Movie> movies)
     {
-        foreach(Movie m in movies)
+        foreach (Movie m in movies)
         {
             System.Console.WriteLine(m.ToString());
         }

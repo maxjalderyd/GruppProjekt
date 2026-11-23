@@ -259,7 +259,7 @@ order by Customer.Id desc
         return db.Execute(sql, new { name, birthDate = birthDate.ToString("yyyy-MM-dd"), email, phoneNumber }); // Konverterar DateOnly till yyyy-MM-dd så att MySQL kan tolka datumet korrekt
     }
 
-    public int AddNewMovie(string title, DateTime releaseDate, decimal pricePerDay) // lägg in en ny film in i databasen
+    public int AddNewMovie(string? title, DateTime releaseDate, decimal pricePerDay) // lägg in en ny film in i databasen
     {
         using IDbConnection db = new MySqlConnection(connectionString);
         string sql = """
