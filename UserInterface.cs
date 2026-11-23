@@ -185,14 +185,14 @@ public class UserInterface
     }
     public bool ConfirmOrder(List<MovieReceiptRow> receiptRows)
     {
-        int totalPrice = 0;
+        decimal totalPrice = 0;
         Console.WriteLine("====== SAMMANFATTNING ======");
         foreach (var row in receiptRows)
         {
             Console.WriteLine($"{row.MovieTitle} - {row.PricePerDay:C2} x {row.RentalDays} dagar");
             Console.WriteLine($"\tDue date: {row.ExpectedReturnDate}");
             Console.WriteLine("-------------------------------");
-            totalPrice += row.PricePerDay * row.RentalDays;
+            totalPrice += row.TotalPrice;
         }
         Console.WriteLine($"Totalt: {totalPrice:C2}");
 
