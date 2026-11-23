@@ -177,7 +177,7 @@ public class UserInterface
 
             if (!int.TryParse(strRentalDays, out int rentalDays))
                 Console.WriteLine("Felaktig inmatning. Ange endast heltal.");
-            else if (rentalService.IsValidRentalDays(rentalDays))
+            else if (!rentalService.IsValidRentalDays(rentalDays))
                 Console.WriteLine("Kan endast hyra en film i 1-30 dagar.");
             else
                 return rentalDays;
