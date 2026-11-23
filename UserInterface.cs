@@ -45,7 +45,17 @@ public class UserInterface
                 case "3":
                     return;
                 case "4":
-                    return;
+                    System.Console.WriteLine("skriv in barcode");
+                    string copy = Console.ReadLine() ?? "";
+                    try
+                    {
+                        rentalService.ReturnMovie(copy);
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                    break;
                 case "5":
                     CreateNewCustomer();
                     break;

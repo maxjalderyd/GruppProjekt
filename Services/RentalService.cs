@@ -55,4 +55,13 @@ public class RentalService
     {
         return repo.CreateRentalWithMovies(customerId, movies);
     }
+
+    public void ReturnMovie(string barcode)
+    {
+        MovieCopy? movieCopy = repo.GetMovieWithBarcode(barcode);
+        if (movieCopy == null)
+            throw new ArgumentException("Ingen film med den streckkoden hittades.");
+        
+        repo.ReturnMovie(movieCopy);
+    }
 }
