@@ -311,11 +311,19 @@ public class UserInterface
     public void QuitUi()
     {
         for (int i = 0; i < 9; i++)
-    {
+        {
         string dots = new string('.', (i % 3) + 1).PadRight(3);
         Console.Write($"\ravslutar {dots}");
         Thread.Sleep(300);
+        }
+        Console.WriteLine();
     }
-    Console.WriteLine();
+
+    public void WriteMovies(List<Movie> movies)
+    {
+        foreach (Movie m in movies)
+        {
+            System.Console.WriteLine(m.ToString());
+        }
     }
 }

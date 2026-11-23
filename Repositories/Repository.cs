@@ -1,6 +1,7 @@
 using MySql.Data.MySqlClient;
 using Dapper;
 using System.Data;
+using Org.BouncyCastle.Bcpg;
 
 public class Repository
 {
@@ -132,20 +133,16 @@ public class Repository
         }
     }
 
-    public void ShowAllMovies()
+    public List<Movie> GetAllMovies()
     {
         using IDbConnection db = new MySqlConnection(connectionString);
         string sql = """
-                    SELECT Movie.Id, Movie.Title, Movie.ReleaseDate, Movie.PricePerDay
+                    SELECT DISTINCT Movie.Id, Movie.Title, Movie.ReleaseDate, Movie.PricePerDay
                     FROM Movie
                     INNER JOIN MovieCopy on Movie.Id = MovieCopy.MovieId
-                    WHERE MovieCopy.IsAvailable = false AND Movie.IsDeleted = 0
+                    WHERE MovieCopy.IsAvailable = true AND Movie.IsDeleted = 0
                     """;
-        IEnumerable<Movie> movies = db.Query<Movie>(sql).ToList();
-        foreach (Movie m in movies)
-        {
-            System.Console.WriteLine($"{m.Title}, {m.PricePerDay}");
-        }
+        return db.Query<Movie>(sql).ToList();
     }
     public IEnumerable<Movie> GetAllNotRentedMovies() // hämtar alla filmer som har minst ett ledigt exemplar
     {
@@ -279,8 +276,9 @@ order by Customer.Id desc
         receipt.DiscountPercentage = discount.ChooseDiscount();
     }
 
-    public LateInvoice? ReturnMovie(MovieRental movieRental)
+    public LateInvoice? ReturnMovie(MovieCopy movieCopy)
     {
+        
         using IDbConnection db = new MySqlConnection(connectionString);
         db.Open();
         using IDbTransaction transaction = db.BeginTransaction();
@@ -291,13 +289,14 @@ order by Customer.Id desc
             SET ReturnDate = CURRENT_DATE()
             WHERE MovieCopyId = @MovieCopyId AND ReturnDate IS NULL
             """,
-            new { MovieCopyId = movieRental.MovieCopyId },
+            new { MovieCopyId = movieCopy.Id },
             transaction);
 
         transaction.Commit();
-        return GetRental(movieRental.MovieCopyId);
+        return GetLateRentalsToInvoice(movieCopy.Id);
     }
-    public LateInvoice? GetRental(int movieCopyId) // Hämta alla försenade återlämningar, returnerar ett objekt med information för fersenad inlämnings faktura
+
+    public LateInvoice? GetLateRentalsToInvoice(int movieCopyId) // Hämta alla försenade återlämningar, returnerar ett objekt med information för fersenad inlämnings faktura
     {
         using IDbConnection db = new MySqlConnection(connectionString);
         string GetRentalSql = """
