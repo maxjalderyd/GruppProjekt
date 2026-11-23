@@ -64,4 +64,9 @@ public class RentalService
         
         repo.ReturnMovie(movieCopy);
     }
+
+    public List<LateRentalsDTO> GetLateReturns()
+    {
+        return repo.GetLateReturns();
+    }
 }

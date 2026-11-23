@@ -6,19 +6,21 @@ using MySqlX.XDevAPI.CRUD;
 namespace GruppProjekt;
 public class UserInterface
 {
-    //Ui behöver inte veta om repositoriet när RentalService är implementerat
+    //Ui behöver inte veta om repositoriet när Service klasser är implementerade
     private readonly Repository repo;
-    //RentalService sköter affärslogik och databasanrop
+    //Service klasser sköter affärslogik och databasanrop
     private readonly RentalService rentalService;
-    public UserInterface(Repository repo, RentalService rentalService)
+    private readonly MovieService movieService;
+    public UserInterface(Repository repo, RentalService rentalService, MovieService movieService)
     {
         this.repo = repo;
         this.rentalService = rentalService;
+        this.movieService = movieService;
     }
 
     public void Start()
     {
-        repo.CheckDateAndPrice();
+        movieService.CheckDateAndPrice();
         while (true)
         {
             Console.WriteLine("Hej vad vill du göra?");
@@ -40,10 +42,19 @@ public class UserInterface
                     RentMovie();
                     break;
                 case "2":
-                        repo.ShowAllMovies();
-                    return;
+                    Console.Clear();
+                    WriteMovies(movieService.GetAllMovies());
+                    Thread.Sleep(5000);
+                    break;
                 case "3":
-                    return;
+                    Console.Write("Namn: ");
+                    string name = Console.ReadLine();
+                    Console.Write("Releasedatum (YYYY-MM-DD): ");
+                    DateTime releaseDatum = DateTime.Parse(Console.ReadLine());
+                    Console.Write("Pris per dag: ");
+                    decimal price = decimal.Parse(Console.ReadLine());
+                    movieService.AddNewMovie(name, releaseDatum, price);
+                    break;
                 case "4":
                     System.Console.WriteLine("skriv in barcode");
                     string copy = Console.ReadLine() ?? "";
@@ -61,23 +72,15 @@ public class UserInterface
                     break;
                 case "6":
                     System.Console.WriteLine("vilken film vill du radera? Namn");
-                    repo.ShowAllMovies();
-                    DeleteMovieUi(repo.DeleteMovie(Console.ReadLine()));
-                    return;
+                    WriteMovies(movieService.GetAllMovies());
+                    DeleteMovieUi(movieService.DeleteMovie(Console.ReadLine()));
+                    break;
                 case "7":
-                    return;
+                    ShowAllLateMovies(rentalService.GetLateReturns());
+                    break;
                 case "8":
-                    ShowAllLateMovies(repo.GetLateReturns());
+                    QuitUi();
                     return;
-                case "9":
-    for (int i = 0; i < 9; i++)
-    {
-        string dots = new string('.', (i % 3) + 1).PadRight(3);
-        Console.Write($"\ravslutar {dots}");
-        Thread.Sleep(300);
-    }
-    Console.WriteLine();
-    return;
 
             }
         }
