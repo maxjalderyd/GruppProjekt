@@ -67,7 +67,6 @@ public class UserInterface
             }
         }
     }
-
     public void ShowAllMovies()
     {
         List<Movie> movies = repo.GetAllMovies();
@@ -167,6 +166,7 @@ public class UserInterface
         while (true)
         {
             Console.WriteLine("Tryck [Q] för att avsluta.");
+
             Console.Write("Namn:\n> ");
 
             string name = Console.ReadLine() ?? "";
@@ -174,17 +174,38 @@ public class UserInterface
             if (name.Equals("Q", StringComparison.OrdinalIgnoreCase))
                 return null;
 
-            Console.Write("Personnummer [YYYY-MM-DD]:\n> ");
+            if (!Helpers.IsValidName(name))
+            {
+                Console.WriteLine("Ogiltigt namn. Försök igen.");
+                continue;
+            }
+
+            Console.Write("Födelsedatum (YYYY-MM-DD):\n> ");
             string birthdateString = Console.ReadLine() ?? "";
-            DateOnly birthDate = DateOnly.Parse(birthdateString);
+            DateOnly birthDate;
+            while (!DateOnly.TryParse(birthdateString, out birthDate))
+            {
+                Console.Write("Ogiltigt datum. Format måste vara [YYYY-MM-DD]:\n> ");
+                birthdateString = Console.ReadLine() ?? "";
+            }
 
             Console.Write("Email:\n> ");
-            string mail = Console.ReadLine() ?? "";
+            string email = Console.ReadLine() ?? "";
+            while (!Helpers.IsValidEmail(email))
+            {
+                Console.Write("Ogiltig email. Försök igen:\n> ");
+                email = Console.ReadLine() ?? "";
+            }
 
             Console.Write("Telefonnummer:\n> ");
             string phone = Console.ReadLine() ?? "";
+            while (!Helpers.IsValidPhoneNumber(phone))
+            {
+                Console.WriteLine("Ogiltigt telefonnummer. Försök igen:\n> ");
+                phone = Console.ReadLine() ?? "";
+            }
 
-            Customer? customer = repo.GetCustomer(name, birthDate, mail, phone);
+            Customer? customer = repo.GetCustomer(name, birthDate, email, phone);
             if (customer == null)
             {
                 Console.WriteLine("Det finns ingen kund som matchar. Kontrollera info eller registrera ny kund.");
@@ -197,6 +218,11 @@ public class UserInterface
     {
         Console.Write("Ange streckkod:\n> ");
         string barcode = Console.ReadLine() ?? "";
+        while (!Helpers.IsValidBarcode(barcode))
+        {
+            Console.Write("Ogiltigt format för streckkod. Försök igen:\n> ");
+            barcode = Console.ReadLine() ?? "";
+        }
 
         MovieCopy? movieCopy = repo.GetMovieWithBarcode(barcode);
 
@@ -288,6 +314,11 @@ public class UserInterface
     {
         Console.Write("Namn:\n> ");
         string name = Console.ReadLine() ?? "";
+        while (!Helpers.IsValidName(name))
+        {
+            Console.Write("Ogiltigt nam. Försök igen:\n> ");
+            name = Console.ReadLine() ?? "";
+        }
 
         Console.Write("Födelsedatum (YYYY-MM-DD):\n> ");
         string strBirthDate = Console.ReadLine() ?? "";
@@ -300,11 +331,22 @@ public class UserInterface
 
         Console.Write("Email:\n> ");
         string email = Console.ReadLine() ?? "";
+        while (!Helpers.IsValidEmail(email))
+        {
+            Console.Write("Ogiltig email. Försök igen:\n> ");
+            email = Console.ReadLine() ?? "";
+        }
 
         Console.Write("Telefonnummer:\n> ");
         string phoneNumber = Console.ReadLine() ?? "";
+        while (!Helpers.IsValidPhoneNumber(phoneNumber))
+        {
+            Console.WriteLine("Ogiltigt telefonnummer. Försök igen:\n> ");
+            phoneNumber = Console.ReadLine() ?? "";
+        }
 
         int rowsAffected = repo.CreateNewCustomer(name, birthDate, email, phoneNumber);
+
         if (rowsAffected == 1)
             Console.WriteLine("Kunden las till.");
         else
